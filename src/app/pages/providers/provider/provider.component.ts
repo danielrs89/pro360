@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { ProviderService } from '../../services/provider.service';
+import { ProviderService } from '../../../services/provider.service';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-provider',
-  imports: [],
+  imports: [RouterLink],
   templateUrl: './provider.component.html',
   styleUrl: './provider.component.css',
 })

@@ -1,4 +1,4 @@
-export default interface Providers {
+export default interface Provider {
   id_provider: number;
   category_provider: string;
   name_provider: string;

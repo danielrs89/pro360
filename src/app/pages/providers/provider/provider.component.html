@@ -1,0 +1,15 @@
+<ul >
+  @for (provider of providerService.providersList; track $index) {
+  <div style="border: 1px solid black">
+    <a [routerLink]="[provider.id_provider]">
+      <li> {{ provider.name_provider }} </li>
+      <li> {{provider.category_provider}} </li>
+      <li> {{provider.name_provider}} </li>
+      <li> {{provider.cif_provider}} </li>
+      <li> {{provider.email_provider}} </li>
+      <li> {{provider.phone_provider}} </li>
+    
+      </a>
+  </div>
+  }
+</ul>
