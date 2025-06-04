@@ -1,1 +1,5 @@
-<p>provider works!</p>
+<ul>
+  @for (provider of providerService.providersList; track $index) {
+    <li>{{ provider.name_provider }}</li>
+  }
+</ul>

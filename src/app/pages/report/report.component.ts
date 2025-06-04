@@ -4,8 +4,6 @@ import { Component } from '@angular/core';
   selector: 'app-report',
   imports: [],
   templateUrl: './report.component.html',
-  styleUrl: './report.component.css'
+  styleUrl: './report.component.css',
 })
-export class ReportComponent {
-
-}
+export class ReportComponent {}
