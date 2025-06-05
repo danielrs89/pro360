@@ -1,15 +1,97 @@
-<ul >
+@if(providerService.isCreate){
+<!-- CREATE -->
+<form [formGroup]="providerForm">
+  <fieldset>
+    <label for="provider-cif">*CIF </label>
+    <input type="text" id="provider-cif" formControlName="cif_provider" required>
+  </fieldset>
+  <fieldset>
+    <label for="provider-name">*Name </label>
+    <input type="text" id="provider-name" formControlName="name_provider" required>
+  </fieldset>
+  <fieldset>
+    <label for="provider-email">*Email </label>
+    <input type="text" id="provider-email" formControlName="email_provider" required>
+  </fieldset>
+  <fieldset>
+    <label for="provider-phone">*Phone </label>
+    <input type="text" id="provider-phone" formControlName="phone_provider" required>
+  </fieldset>
+  <fieldset>
+    <label for="provider-category">*Category </label>
+    <select id="provider-category" formControlName="category_provider" required>
+      <option value="" disabled selected>...</option>
+      <option value="Carnes">Carnes</option>
+      <option value="Pescados">Pescados</option>
+      <option value="Vinos">Vinos</option>
+      <option value="Refrescos">Refrescos</option>
+      <option value="Postres">Postres</option>
+    </select>
+  </fieldset>
+
+</form>
+<pre>* Campos necesarios</pre>
+<button (click)="createProvider()" [disabled]="providerForm.invalid">Crear Proveedor</button>
+<button (click)="cancelEdit()">Cancelar</button>
+
+}@else if (providerService.isEdit) {
+<!-- UPDATE -->
+<form [formGroup]="providerForm">
+  <fieldset>
+    <label for="provider-cif">*CIF </label>
+    <input type="text" id="provider-cif" formControlName="cif_provider" required>
+  </fieldset>
+  <fieldset>
+    <label for="provider-name">*Name </label>
+    <input type="text" id="provider-name" formControlName="name_provider" required>
+  </fieldset>
+  <fieldset>
+    <label for="provider-email">*Email </label>
+    <input type="text" id="provider-email" formControlName="email_provider" required>
+  </fieldset>
+  <fieldset>
+    <label for="provider-phone">*Phone </label>
+    <input type="text" id="provider-phone" formControlName="phone_provider" required>
+  </fieldset>
+  <fieldset>
+    <label for="provider-category">*Category </label>
+    <select id="provider-category" formControlName="category_provider" required>
+      <option value="" disabled>...</option>
+      <option value="Carnes">Carnes</option>
+      <option value="Pescados">Pescados</option>
+      <option value="Vinos">Vinos</option>
+      <option value="Refrescos">Refrescos</option>
+      <option value="Postres">Postres</option>
+    </select>
+  </fieldset>
+
+</form>
+<pre>* Campos necesarios</pre>
+<button (click)="updateProvider()" [disabled]="providerForm.invalid">Actualizar Proveedor</button>
+<button (click)="cancelEdit()">Cancelar</button>
+
+
+}@else {
+<!-- READ -->
+<button (click)="handleCreate(true)">
+  Crear
+</button>
+<ul>
   @for (provider of providerService.providersList; track $index) {
   <div style="border: 1px solid black">
+    <p class="trash-icon" (click)="handleDelete(provider.id_provider)">🗑️</p>
+    <p class="trash-icon" (click)="handleUpdate(provider.id_provider, true)">🖊️</p>
     <a [routerLink]="[provider.id_provider]">
-      <li> {{ provider.name_provider }} </li>
-      <li> {{provider.category_provider}} </li>
-      <li> {{provider.name_provider}} </li>
       <li> {{provider.cif_provider}} </li>
+      <li> {{provider.name_provider}} </li>
       <li> {{provider.email_provider}} </li>
       <li> {{provider.phone_provider}} </li>
-    
-      </a>
+      <li> {{provider.category_provider}} </li>
+    </a>
+    <button routerLink="/product">
+      Productos
+    </button>
   </div>
   }
 </ul>
+}

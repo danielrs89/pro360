@@ -17,5 +17,5 @@ export const routes: Routes = [
   { path: 'sales', component: SalesComponent },
   { path: 'report', component: ReportComponent },
 
-  { path: '**', component: ErrorComponent },
+  { path: '**', component: ErrorComponent }
 ];

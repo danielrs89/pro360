@@ -27,8 +27,7 @@ export class ProviderIdComponent implements OnInit {
         this.providerId = data;
       },
       error: (e) => {
-        console.log(e);
-
+        console.log("ERROR getProviderId(id: number) => ", e);
       }
     })
   }
