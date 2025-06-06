@@ -5,4 +5,5 @@ export default interface Provider {
   email_provider: string;
   phone_provider: string;
   category_provider: string;
+  count_provider: number; // decimal(10,2)
 }

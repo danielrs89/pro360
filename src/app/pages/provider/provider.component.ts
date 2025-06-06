@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { ProviderService } from '../../../services/provider.service';
+import { ProviderService } from '../../services/provider.service';
 import { Router, RouterLink } from '@angular/router';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import Provider from '../../../models/Provider';
+import Provider from '../../models/Provider';
 
 @Component({
   selector: 'app-provider',
@@ -18,6 +18,7 @@ export class ProviderComponent implements OnInit {
   email_provider: FormControl;
   phone_provider: FormControl;
   category_provider: FormControl;
+  count_provider: FormControl;
   // idSelected: number;
 
 
@@ -34,6 +35,7 @@ export class ProviderComponent implements OnInit {
     this.email_provider = new FormControl('');
     this.phone_provider = new FormControl('');
     this.category_provider = new FormControl('');
+    this.count_provider = new FormControl('');
 
     this.providerForm = new FormGroup({
       id_provider: this.id_provider,
@@ -42,6 +44,7 @@ export class ProviderComponent implements OnInit {
       email_provider: this.email_provider,
       phone_provider: this.phone_provider,
       category_provider: this.category_provider,
+      count_provider: this.count_provider,
     })
   }
 
@@ -74,11 +77,11 @@ export class ProviderComponent implements OnInit {
   }
 
   createProvider() {
-    console.log("Datos del formulario =>", this.providerForm.value);
+    // console.log("Datos del formulario =>", this.providerForm.value);
 
     this.providerService.createProvider(this.providerForm.value).subscribe({
       next: (data) => {
-        console.log("Datos que se envía al servidor", data);
+        // console.log("Datos que se envía al servidor", data);
         console.log("CREATE");
         this.getProviders();
         this.providerService.isCreate = false;
