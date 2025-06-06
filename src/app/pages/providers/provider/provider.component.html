@@ -32,7 +32,7 @@
 </form>
 <pre>* Campos necesarios</pre>
 <button (click)="createProvider()" [disabled]="providerForm.invalid">Crear Proveedor</button>
-<button (click)="cancelEdit()">Cancelar</button>
+<button (click)="cancelCreateEdit()">Cancelar</button>
 
 }@else if (providerService.isEdit) {
 <!-- UPDATE -->
@@ -68,7 +68,7 @@
 </form>
 <pre>* Campos necesarios</pre>
 <button (click)="updateProvider()" [disabled]="providerForm.invalid">Actualizar Proveedor</button>
-<button (click)="cancelEdit()">Cancelar</button>
+<button (click)="cancelCreateEdit()">Cancelar</button>
 
 
 }@else {
@@ -81,13 +81,13 @@
   <div style="border: 1px solid black">
     <p class="trash-icon" (click)="handleDelete(provider.id_provider)">🗑️</p>
     <p class="trash-icon" (click)="handleUpdate(provider.id_provider, true)">🖊️</p>
-    <a [routerLink]="[provider.id_provider]">
+    <!-- <a [routerLink]="[provider.id_provider]">  -->
       <li> {{provider.cif_provider}} </li>
       <li> {{provider.name_provider}} </li>
       <li> {{provider.email_provider}} </li>
       <li> {{provider.phone_provider}} </li>
       <li> {{provider.category_provider}} </li>
-    </a>
+    <!-- </a> -->
     <button routerLink="/product">
       Productos
     </button>

@@ -1,0 +1,84 @@
+@if(productService.isCreate){
+<!-- CREATE -->
+
+
+<form [formGroup]="productForm">
+    <fieldset>
+        <label for="product-name">*Name </label>
+        <input type="text" id="product-name" formControlName="name_product" required>
+    </fieldset>
+    <fieldset>
+        <label for="product-description">*Description</label>
+        <input type="text" id="product-description" formControlName="description_product" required>
+    </fieldset>
+    <!-- <fieldset>
+        <label for="product-unit">*Unit </label>
+        <input type="text" id="product-unit" formControlName="unit_product" required>
+    </fieldset> -->
+    <fieldset>
+        <label for="product-price">*Price € </label>
+        <input type="text" id="product-price" formControlName="price_product" required>
+    </fieldset>
+    <fieldset>
+        <label for="product-photo">*Photo </label>
+        <input type="text" id="product-photo" formControlName="photo_product" required>
+    </fieldset>
+</form>
+<pre>* Campos necesarios</pre>
+<button (click)="createProduct()" [disabled]="productForm.invalid">Crear Proveedor</button>
+<button (click)="cancelCreateEdit()">Cancelar</button>
+
+
+
+}@else if (productService.isEdit) {
+<!-- UPDATE -->
+<form [formGroup]="productForm">
+    <fieldset>
+        <label for="product-name">*Name </label>
+        <input type="text" id="product-name" formControlName="name_product" required>
+    </fieldset>
+    <fieldset>
+        <label for="product-description">*Description</label>
+        <input type="text" id="product-description" formControlName="description_product" required>
+    </fieldset>
+    <!-- <fieldset>
+        <label for="product-unit">*Unit </label>
+        <input type="text" id="product-unit" formControlName="unit_product" required>
+    </fieldset> -->
+    <fieldset>
+        <label for="product-price">*Price € </label>
+        <input type="text" id="product-price" formControlName="price_product" required>
+    </fieldset>
+    <fieldset>
+        <label for="product-photo">*Photo </label>
+        <input type="text" id="product-photo" formControlName="photo_product" required>
+    </fieldset>
+</form>
+<pre>* Campos necesarios</pre>
+<button (click)="updateProduct()" [disabled]="productForm.invalid">Actualizar Proveedor</button>
+<button (click)="cancelCreateEdit()">Cancelar</button>
+
+
+}@else {
+<!-- READ -->
+<button (click)="handleCreate(true)">
+    Añadir
+</button>
+<ul>
+    @for (product of productService.productsList; track $index) {
+    <div style="border: 1px solid black">
+        <p class="trash-icon" (click)="handleDelete(product.id_product)">🗑️</p>
+        <p class="trash-icon" (click)="handleUpdate(product.id_product, true)">🖊️</p>
+        <!-- <a [routerLink]="[product.id_product]"> -->
+            <li> {{product.name_product}} </li>
+            <li> {{product.description_product}} </li>
+            <!-- <li> {{product.unit_product}} </li> -->
+            <li> {{product.price_product}} €</li>
+            <img [src]="'assets/img/products/'+product.photo_product+'.jpg'" alt="{{product.photo_product}}" style="width: 100px; ">
+        <!-- </a> -->
+        <!-- <button routerLink="/product">
+            Productos
+        </button> -->
+    </div>
+    }
+</ul> }

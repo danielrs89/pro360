@@ -18,13 +18,14 @@ export class ProviderComponent implements OnInit {
   email_provider: FormControl;
   phone_provider: FormControl;
   category_provider: FormControl;
-  idSelected: number;
+  // idSelected: number;
 
 
-  constructor(public providerService: ProviderService, private router: Router) {
-    
-
-    this.idSelected = 0;
+  constructor(
+    public providerService: ProviderService,
+    // private router: Router
+  ) {
+    // this.idSelected = 0;
 
     // CREATE
     this.id_provider = new FormControl('');
@@ -47,9 +48,9 @@ export class ProviderComponent implements OnInit {
   ngOnInit(): void {
     this.getProviders();
     // se previene que se queden a true en todo los casos
-    this.cancelEdit()
+    this.cancelCreateEdit()
   }
-cancelEdit() {
+  cancelCreateEdit() {
     this.providerService.isCreate = false;
     this.providerService.isEdit = false;
     this.providerForm.reset();

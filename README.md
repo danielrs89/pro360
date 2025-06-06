@@ -3,7 +3,7 @@
 </p>
 
 <h1 align="center">Pro360</h1>
-<p align="center"><i>Gestión completa de proveedores, productos y ventas.</i></p>
+<p align="center"><i>Complete supplier, product and sales management.</i></p>
 
 ---
 
