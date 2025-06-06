@@ -1,7 +1,5 @@
 @if(productService.isCreate){
 <!-- CREATE -->
-
-
 <form [formGroup]="productForm">
     <fieldset>
         <label for="product-name">*Name </label>
@@ -19,15 +17,21 @@
         <label for="product-price">*Price € </label>
         <input type="text" id="product-price" formControlName="price_product" required>
     </fieldset>
+
     <fieldset>
         <label for="product-photo">*Photo </label>
-        <input type="text" id="product-photo" formControlName="photo_product" required>
+        <input id="product-photo" list="photos" formControlName="photo_product" required
+            placeholder="Escribe o selecciona una foto..." />
+        <datalist id="photos">
+            @for (photo of productService.photosList; track $index) {a
+            <option [value]="photo">{{photo}}</option>
+            }
+        </datalist>
     </fieldset>
 </form>
 <pre>* Campos necesarios</pre>
 <button (click)="createProduct()" [disabled]="productForm.invalid">Crear Proveedor</button>
 <button (click)="cancelCreateEdit()">Cancelar</button>
-
 
 
 }@else if (productService.isEdit) {
@@ -51,7 +55,13 @@
     </fieldset>
     <fieldset>
         <label for="product-photo">*Photo </label>
-        <input type="text" id="product-photo" formControlName="photo_product" required>
+        <input id="product-photo" list="photos" formControlName="photo_product" required
+            placeholder="Escribe o selecciona una foto..." />
+        <datalist id="photos">
+            @for (photo of productService.photosList; track $index) {a
+            <option [value]="photo">{{photo}}</option>
+            }
+        </datalist>
     </fieldset>
 </form>
 <pre>* Campos necesarios</pre>
@@ -70,11 +80,12 @@
         <p class="trash-icon" (click)="handleDelete(product.id_product)">🗑️</p>
         <p class="trash-icon" (click)="handleUpdate(product.id_product, true)">🖊️</p>
         <!-- <a [routerLink]="[product.id_product]"> -->
-            <li> {{product.name_product}} </li>
-            <li> {{product.description_product}} </li>
-            <!-- <li> {{product.unit_product}} </li> -->
-            <li> {{product.price_product}} €</li>
-            <img [src]="'assets/img/products/'+product.photo_product+'.jpg'" alt="{{product.photo_product}}" style="width: 100px; ">
+        <li> {{product.name_product}} </li>
+        <li> {{product.description_product}} </li>
+        <!-- <li> {{product.unit_product}} </li> -->
+        <li> {{product.price_product}} €</li>
+        <img [src]="'assets/img/products/'+product.photo_product+'.jpg'" alt="{{product.photo_product}}"
+            style="width: 100px; ">
         <!-- </a> -->
         <!-- <button routerLink="/product">
             Productos

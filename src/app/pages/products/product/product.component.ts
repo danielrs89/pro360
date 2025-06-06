@@ -6,7 +6,7 @@ import Product from '../../../models/Product';
 
 @Component({
   selector: 'app-product',
-  imports: [ ReactiveFormsModule],
+  imports: [ReactiveFormsModule],
   templateUrl: './product.component.html',
   styleUrl: './product.component.css',
 })
@@ -17,6 +17,7 @@ export class ProductComponent implements OnInit {
 
   constructor(public productService: ProductService) {
     // CREATE
+    // Inicializa el formulario
     this.productForm = new FormGroup({
       id_product: new FormControl(''),
       name_product: new FormControl(''),
@@ -24,7 +25,7 @@ export class ProductComponent implements OnInit {
       unit_product: new FormControl(''),
       price_product: new FormControl(''),
       photo_product: new FormControl(''),
-      id_provider: new FormControl(''),
+      id_provider: new FormControl('')
     });
   }
   ngOnInit(): void {
@@ -49,6 +50,7 @@ export class ProductComponent implements OnInit {
           (product, index, self) =>
             index === self.findIndex(p => p.name_product === product.name_product)
         );
+        // this.productService.getNamePhoto(); // añade de productos el nombre de las imágenes y lo guarda en photosList.
       },
       error: (e) => {
         console.log("ERROR getProduct() => ", e.message);
@@ -69,8 +71,18 @@ export class ProductComponent implements OnInit {
   // CREATE
   handleCreate(isCreate: boolean) {
     this.productService.isCreate = isCreate;
+
   }
   createProduct() {
+    const newProduct = this.productForm.value;
+    const exists = this.productService.productsList.some(
+      product => product.name_product.trim().toLowerCase() === newProduct.name_product.trim().toLowerCase()
+    );
+
+    if (exists) {
+      alert("El producto ya existe");
+      return;
+    }
     this.productService.createProduct(this.productForm.value).subscribe({
       next: (data) => {
         console.log("CREATE");
@@ -93,10 +105,12 @@ export class ProductComponent implements OnInit {
       this.productForm.patchValue(product);
     }
   }
-
   updateProduct() {
+    console.log(this.productForm.value);
+    
     this.productService.updateProduct(this.productForm.value).subscribe({
       next: (data) => {
+        
         console.log("UPDATE");
         this.getProducts();
         this.productService.isEdit = false;
@@ -125,4 +139,6 @@ export class ProductComponent implements OnInit {
       }
     })
   }
+
+
 }

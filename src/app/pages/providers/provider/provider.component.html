@@ -34,6 +34,7 @@
 <button (click)="createProvider()" [disabled]="providerForm.invalid">Crear Proveedor</button>
 <button (click)="cancelCreateEdit()">Cancelar</button>
 
+
 }@else if (providerService.isEdit) {
 <!-- UPDATE -->
 <form [formGroup]="providerForm">
@@ -82,11 +83,13 @@
     <p class="trash-icon" (click)="handleDelete(provider.id_provider)">🗑️</p>
     <p class="trash-icon" (click)="handleUpdate(provider.id_provider, true)">🖊️</p>
     <!-- <a [routerLink]="[provider.id_provider]">  -->
-      <li> {{provider.cif_provider}} </li>
-      <li> {{provider.name_provider}} </li>
-      <li> {{provider.email_provider}} </li>
-      <li> {{provider.phone_provider}} </li>
-      <li> {{provider.category_provider}} </li>
+    <li> {{provider.cif_provider}} </li>
+    <li> {{provider.name_provider}} </li>
+
+    <li> <a class="trash-icon" [href]="'mailto:' + provider.email_provider">{{provider.email_provider}} · 📧</a> </li>
+    <li> <a class="trash-icon" [href]="'https://wa.me/' + provider.phone_provider"
+        target="_blank">{{provider.phone_provider}} · 📞</a> </li>
+    <li> {{provider.category_provider}} </li>
     <!-- </a> -->
     <button routerLink="/product">
       Productos
