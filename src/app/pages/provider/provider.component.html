@@ -159,7 +159,7 @@
     </li>
     <li>{{ provider.category_provider }}</li>
     <!-- </a> -->
-    <button routerLink="/product">Productos</button>
+    <button [routerLink]="['/product/',provider.id_provider]">Productos</button>
   </div>
   }
 </ul>

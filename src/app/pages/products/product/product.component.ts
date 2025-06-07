@@ -16,7 +16,6 @@ export class ProductComponent implements OnInit {
   productForm: FormGroup;
 
   constructor(public productService: ProductService) {
-    // CREATE
     // Inicializa el formulario
     this.productForm = new FormGroup({
       id_product: new FormControl(''),
@@ -54,16 +53,6 @@ export class ProductComponent implements OnInit {
       },
       error: (e) => {
         console.log('ERROR getProduct() => ', e.message);
-      },
-    });
-  }
-  getProductId(id: number) {
-    this.productService.getProductId(id).subscribe({
-      next: (data) => {
-        this.productService.productsList = data;
-      },
-      error: (e) => {
-        console.log('ERROR getProductId() => ', e.message);
       },
     });
   }

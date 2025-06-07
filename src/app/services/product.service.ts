@@ -30,7 +30,7 @@ export class ProductService {
     return this.http.get<Product[]>(this.API_URL);
   }
   // los productos del id_provider
-  getProductId(id: number) {
+  getProductById(id: number) {
     return this.http.get<Product[]>(`${this.API_URL}/${id}`);
   }
 
