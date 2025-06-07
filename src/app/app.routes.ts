@@ -4,7 +4,6 @@ import { ErrorComponent } from './pages/error/error.component';
 
 import { ProviderComponent } from './pages/provider/provider.component';
 
-
 import { ProductComponent } from './pages/products/product/product.component';
 import { ProductIdComponent } from './pages/products/product-id/product-id.component';
 
@@ -19,5 +18,5 @@ export const routes: Routes = [
   { path: 'sales', component: SalesComponent },
   { path: 'report', component: ReportComponent },
 
-  { path: '**', component: ErrorComponent }
+  { path: '**', component: ErrorComponent },
 ];

@@ -3,19 +3,39 @@
 <form [formGroup]="providerForm">
   <fieldset>
     <label for="provider-cif">*CIF </label>
-    <input type="text" id="provider-cif" formControlName="cif_provider" required>
+    <input
+      type="text"
+      id="provider-cif"
+      formControlName="cif_provider"
+      required
+    />
   </fieldset>
   <fieldset>
     <label for="provider-name">*Name </label>
-    <input type="text" id="provider-name" formControlName="name_provider" required>
+    <input
+      type="text"
+      id="provider-name"
+      formControlName="name_provider"
+      required
+    />
   </fieldset>
   <fieldset>
     <label for="provider-email">*Email </label>
-    <input type="text" id="provider-email" formControlName="email_provider" required>
+    <input
+      type="text"
+      id="provider-email"
+      formControlName="email_provider"
+      required
+    />
   </fieldset>
   <fieldset>
     <label for="provider-phone">*Phone </label>
-    <input type="text" id="provider-phone" formControlName="phone_provider" required>
+    <input
+      type="text"
+      id="provider-phone"
+      formControlName="phone_provider"
+      required
+    />
   </fieldset>
   <fieldset>
     <label for="provider-category">*Category </label>
@@ -30,33 +50,58 @@
   </fieldset>
   <fieldset>
     <label for="provider-count">*Count </label>
-    <input type="text" id="provider-count" formControlName="count_provider" required>
+    <input
+      type="text"
+      id="provider-count"
+      formControlName="count_provider"
+      required
+    />
   </fieldset>
-
 </form>
 <pre>* Campos necesarios</pre>
-<button (click)="createProvider()" [disabled]="providerForm.invalid">Crear Proveedor</button>
+<button (click)="createProvider()" [disabled]="providerForm.invalid">
+  Crear Proveedor
+</button>
 <button (click)="cancelCreateEdit()">Cancelar</button>
-
 
 }@else if (providerService.isEdit) {
 <!-- UPDATE -->
 <form [formGroup]="providerForm">
   <fieldset>
     <label for="provider-cif">*CIF </label>
-    <input type="text" id="provider-cif" formControlName="cif_provider" required>
+    <input
+      type="text"
+      id="provider-cif"
+      formControlName="cif_provider"
+      required
+    />
   </fieldset>
   <fieldset>
     <label for="provider-name">*Name </label>
-    <input type="text" id="provider-name" formControlName="name_provider" required>
+    <input
+      type="text"
+      id="provider-name"
+      formControlName="name_provider"
+      required
+    />
   </fieldset>
   <fieldset>
     <label for="provider-email">*Email </label>
-    <input type="text" id="provider-email" formControlName="email_provider" required>
+    <input
+      type="text"
+      id="provider-email"
+      formControlName="email_provider"
+      required
+    />
   </fieldset>
   <fieldset>
     <label for="provider-phone">*Phone </label>
-    <input type="text" id="provider-phone" formControlName="phone_provider" required>
+    <input
+      type="text"
+      id="provider-phone"
+      formControlName="phone_provider"
+      required
+    />
   </fieldset>
   <fieldset>
     <label for="provider-category">*Category </label>
@@ -71,37 +116,50 @@
   </fieldset>
   <fieldset>
     <label for="provider-count">*Count </label>
-    <input type="text" id="provider-count" formControlName="count_provider" required>
+    <input
+      type="text"
+      id="provider-count"
+      formControlName="count_provider"
+      required
+    />
   </fieldset>
-
 </form>
 <pre>* Campos necesarios</pre>
-<button (click)="updateProvider()" [disabled]="providerForm.invalid">Actualizar Proveedor</button>
+<button (click)="updateProvider()" [disabled]="providerForm.invalid">
+  Actualizar Proveedor
+</button>
 <button (click)="cancelCreateEdit()">Cancelar</button>
-
 
 }@else {
 <!-- READ -->
-<button (click)="handleCreate(true)">
-  Crear
-</button>
+<button (click)="handleCreate(true)">Crear</button>
 <ul>
   @for (provider of providerService.providersList; track $index) {
   <div style="border: 1px solid black">
     <p class="trash-icon" (click)="handleDelete(provider.id_provider)">🗑️</p>
-    <p class="trash-icon" (click)="handleUpdate(provider.id_provider, true)">🖊️</p>
+    <p class="trash-icon" (click)="handleUpdate(provider.id_provider, true)">
+      🖊️
+    </p>
     <!-- <a [routerLink]="[provider.id_provider]">  -->
-    <li> {{provider.cif_provider}} </li>
-    <li> {{provider.name_provider}} </li>
+    <li>{{ provider.cif_provider }}</li>
+    <li>{{ provider.name_provider }}</li>
 
-    <li> <a class="trash-icon" [href]="'mailto:' + provider.email_provider">{{provider.email_provider}} · 📧</a> </li>
-    <li> <a class="trash-icon" [href]="'https://wa.me/' + provider.phone_provider"
-        target="_blank">{{provider.phone_provider}} · 📞</a> </li>
-    <li> {{provider.category_provider}} </li>
+    <li>
+      <a class="trash-icon" [href]="'mailto:' + provider.email_provider"
+        >{{ provider.email_provider }} · 📧</a
+      >
+    </li>
+    <li>
+      <a
+        class="trash-icon"
+        [href]="'https://wa.me/+34' + provider.phone_provider"
+        target="_blank"
+        >{{ provider.phone_provider }} · 📞</a
+      >
+    </li>
+    <li>{{ provider.category_provider }}</li>
     <!-- </a> -->
-    <button routerLink="/product">
-      Productos
-    </button>
+    <button routerLink="/product">Productos</button>
   </div>
   }
 </ul>

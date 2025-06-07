@@ -12,11 +12,18 @@ export class ProductService {
   isCreate: boolean = false;
   isEdit: boolean = false;
 
-
   constructor(private http: HttpClient) {
     this.productsList = [];
-    this.photosList = ["chuleton", "aceite", "cola", "haba", "merluza", "tarta", "vino","calabaza"];
-
+    this.photosList = [
+      'chuleton',
+      'aceite',
+      'cola',
+      'haba',
+      'merluza',
+      'tarta',
+      'vino',
+      'calabaza',
+    ];
   }
 
   getProduct() {
@@ -32,14 +39,17 @@ export class ProductService {
   }
 
   updateProduct(product: Product) {
-    return this.http.put<Product>(`${this.API_URL}/${product.id_product}`, product);
+    return this.http.put<Product>(
+      `${this.API_URL}/${product.id_product}`,
+      product
+    );
   }
 
   deleteProduct(id: number) {
     return this.http.delete<Product>(`${this.API_URL}/${id}`);
   }
 
-  // PROBLEMA si añado una foto no sale y es justo lo que pretendo, 
+  // PROBLEMA si añado una foto no sale y es justo lo que pretendo,
   // SOLUCION crear tabla solo con nombre de las fotos de los productos
   // añade el nombre de los productos de las imágenes y lo guarda en photosList.
   // getNamePhoto() {

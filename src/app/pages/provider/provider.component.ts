@@ -21,11 +21,8 @@ export class ProviderComponent implements OnInit {
   count_provider: FormControl;
   // idSelected: number;
 
-
-  constructor(
-    public providerService: ProviderService,
-    // private router: Router
-  ) {
+  constructor(public providerService: ProviderService) // private router: Router
+  {
     // this.idSelected = 0;
 
     // CREATE
@@ -45,13 +42,13 @@ export class ProviderComponent implements OnInit {
       phone_provider: this.phone_provider,
       category_provider: this.category_provider,
       count_provider: this.count_provider,
-    })
+    });
   }
 
   ngOnInit(): void {
     this.getProviders();
     // se previene que se queden a true en todo los casos
-    this.cancelCreateEdit()
+    this.cancelCreateEdit();
   }
   cancelCreateEdit() {
     this.providerService.isCreate = false;
@@ -65,7 +62,7 @@ export class ProviderComponent implements OnInit {
         this.providerService.providersList = data;
       },
       error: (e) => {
-        console.log("ERROR getProviders() => ", e);
+        console.log('ERROR getProviders() => ', e);
       },
     });
   }
@@ -82,14 +79,14 @@ export class ProviderComponent implements OnInit {
     this.providerService.createProvider(this.providerForm.value).subscribe({
       next: (data) => {
         // console.log("Datos que se envía al servidor", data);
-        console.log("CREATE");
+        console.log('CREATE');
         this.getProviders();
         this.providerService.isCreate = false;
       },
       error: (e) => {
-        console.log("ERROR postProvider() => ", e.message);
-      }
-    })
+        console.log('ERROR createProvider() => ', e.message);
+      },
+    });
   }
 
   // UPDATE
@@ -97,43 +94,45 @@ export class ProviderComponent implements OnInit {
     this.providerService.isEdit = isEdit;
 
     // seteando los valores del formulario al seleccionar un proveedor
-    const provider = this.providerService.providersList.find(p => p.id_provider === id);
+    const provider = this.providerService.providersList.find(
+      (p) => p.id_provider === id
+    );
     if (provider) {
       this.providerForm.patchValue(provider);
     }
   }
 
   updateProvider() {
-    console.log("Datos del formulario =>", this.providerForm.value);
+    // console.log("Datos del formulario =>", this.providerForm.value);
 
     this.providerService.updateProvider(this.providerForm.value).subscribe({
       next: (data) => {
-        console.log("Datos que se envía al servidor", data);
-        console.log("UPDATE");
+        // console.log("Datos que se envía al servidor", data);
+        console.log('UPDATE');
         this.getProviders();
         this.providerService.isEdit = false;
       },
       error: (e) => {
-        console.log("ERROR updateProvider() => ", e.message);
-      }
-    })
+        console.log('ERROR updateProvider() => ', e.message);
+      },
+    });
   }
   // DELETE
   handleDelete(id: number) {
-    const confirmed = confirm("¿Seguro que quieres borrar?")
+    const confirmed = confirm('¿Seguro que quieres borrar?');
     if (confirmed) {
-      this.deleteProvider(id)
+      this.deleteProvider(id);
     }
   }
   deleteProvider(id: number) {
     this.providerService.deleteProvider(id).subscribe({
       next: (data) => {
-        console.log("DELETE");
+        console.log('DELETE');
         this.getProviders();
       },
       error: (e) => {
-        console.log("ERROR deleteProvider(id: number) => ", e);
-      }
-    })
+        console.log('ERROR deleteProvider(id: number) => ', e);
+      },
+    });
   }
 }
