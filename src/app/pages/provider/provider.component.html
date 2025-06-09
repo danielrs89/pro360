@@ -39,13 +39,14 @@
   </fieldset>
   <fieldset>
     <label for="provider-category">*Category </label>
-    <select id="provider-category" formControlName="category_provider" required>
+    <select id="provider-category" formControlName="id_category" required>
       <option value="" disabled selected>...</option>
-      <option value="Carnes">Carnes</option>
-      <option value="Pescados">Pescados</option>
-      <option value="Vinos">Vinos</option>
-      <option value="Refrescos">Refrescos</option>
-      <option value="Postres">Postres</option>
+      @for (category of categoryService.categoriesLIst; track $index) {
+
+      <option [value]="category.id_category">
+        {{ category.name_category }}
+      </option>
+      }
     </select>
   </fieldset>
   <fieldset>
@@ -105,13 +106,13 @@
   </fieldset>
   <fieldset>
     <label for="provider-category">*Category </label>
-    <select id="provider-category" formControlName="category_provider" required>
-      <option value="" disabled>...</option>
-      <option value="Carnes">Carnes</option>
-      <option value="Pescados">Pescados</option>
-      <option value="Vinos">Vinos</option>
-      <option value="Refrescos">Refrescos</option>
-      <option value="Postres">Postres</option>
+    <select id="provider-category" formControlName="id_category" required>
+      <option value="" disabled selected>...</option>
+      @for (category of categoryService.categoriesLIst; track $index) {
+      <option [value]="category.id_category">
+        {{ category.name_category }}
+      </option>
+      }
     </select>
   </fieldset>
   <fieldset>
@@ -124,7 +125,6 @@
     />
   </fieldset>
 </form>
-<pre>* Campos necesarios</pre>
 <button (click)="updateProvider()" [disabled]="providerForm.invalid">
   Actualizar Proveedor
 </button>
@@ -143,7 +143,6 @@
     <!-- <a [routerLink]="[provider.id_provider]">  -->
     <li>{{ provider.cif_provider }}</li>
     <li>{{ provider.name_provider }}</li>
-
     <li>
       <a class="trash-icon" [href]="'mailto:' + provider.email_provider"
         >{{ provider.email_provider }} · 📧</a
@@ -157,10 +156,15 @@
         >{{ provider.phone_provider }} · 📞</a
       >
     </li>
-    <li>{{ provider.category_provider }}</li>
+    <li>{{ provider.name_category }}</li>
+    <li>{{ provider.count_provider }} €</li>
     <!-- </a> -->
-    <button [routerLink]="['/product/',provider.id_provider]">Productos</button>
+    <button [routerLink]="['/product/', provider.id_provider]">
+      Productos
+    </button>
   </div>
+  }@empty {
+  <h2>No hay proveedores</h2>
   }
 </ul>
 }

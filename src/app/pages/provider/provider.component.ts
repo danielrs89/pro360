@@ -3,6 +3,7 @@ import { ProviderService } from '../../services/provider.service';
 import { Router, RouterLink } from '@angular/router';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import Provider from '../../models/Provider';
+import { CategoryService } from '../../services/category.service';
 
 @Component({
   selector: 'app-provider',
@@ -17,12 +18,14 @@ export class ProviderComponent implements OnInit {
   name_provider: FormControl;
   email_provider: FormControl;
   phone_provider: FormControl;
-  category_provider: FormControl;
   count_provider: FormControl;
+  id_category: FormControl;
   // idSelected: number;
 
-  constructor(public providerService: ProviderService) // private router: Router
-  {
+  constructor(
+    public providerService: ProviderService,
+    public categoryService: CategoryService // private router: Router
+  ) {
     // this.idSelected = 0;
 
     // CREATE
@@ -31,8 +34,8 @@ export class ProviderComponent implements OnInit {
     this.name_provider = new FormControl('');
     this.email_provider = new FormControl('');
     this.phone_provider = new FormControl('');
-    this.category_provider = new FormControl('');
     this.count_provider = new FormControl('');
+    this.id_category = new FormControl('');
 
     this.providerForm = new FormGroup({
       id_provider: this.id_provider,
@@ -40,8 +43,8 @@ export class ProviderComponent implements OnInit {
       name_provider: this.name_provider,
       email_provider: this.email_provider,
       phone_provider: this.phone_provider,
-      category_provider: this.category_provider,
       count_provider: this.count_provider,
+      id_category: this.id_category,
     });
   }
 
@@ -49,15 +52,29 @@ export class ProviderComponent implements OnInit {
     this.getProviders();
     // se previene que se queden a true en todo los casos
     this.cancelCreateEdit();
+
+    this.getAllCategories();
   }
   cancelCreateEdit() {
     this.providerService.isCreate = false;
     this.providerService.isEdit = false;
     this.providerForm.reset();
   }
+
+  getAllCategories() {
+    this.categoryService.getAllCategories().subscribe({
+      next: (data) => {
+        this.categoryService.categoriesLIst = data;
+      },
+      error: (e) => {
+        console.log('ERROR getAllCategories() => ', e);
+      },
+    });
+  }
+
   // READ
   getProviders() {
-    this.providerService.getProviders().subscribe({
+    this.providerService.getAllProviders().subscribe({
       next: (data) => {
         this.providerService.providersList = data;
       },
@@ -68,11 +85,9 @@ export class ProviderComponent implements OnInit {
   }
 
   // CREATE
-
   handleCreate(isCreate: boolean) {
     this.providerService.isCreate = isCreate;
   }
-
   createProvider() {
     // console.log("Datos del formulario =>", this.providerForm.value);
 

@@ -12,11 +12,16 @@ import { ReportComponent } from './pages/report/report.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
+  
+  // { path: 'category', component:  },
+
   { path: 'provider', component: ProviderComponent },
+  
   { path: 'product', component: ProductComponent },
   { path: 'product/:id', component: ProductIdComponent },
+  
   { path: 'sales', component: SalesComponent },
   { path: 'report', component: ReportComponent },
-
+  
   { path: '**', component: ErrorComponent },
 ];

@@ -25,10 +25,10 @@ export class ProductIdComponent implements OnInit {
       id_product: new FormControl(''),
       name_product: new FormControl(''),
       description_product: new FormControl(''),
-      unit_product: new FormControl(''),
-      price_product: new FormControl(''),
       photo_product: new FormControl(''),
       id_provider: new FormControl(''),
+      // unit_product: new FormControl(''),
+      // price_product: new FormControl(''),
     });
   }
   ngOnInit(): void {

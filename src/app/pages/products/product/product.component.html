@@ -23,7 +23,7 @@
         <label for="product-unit">*Unit </label>
         <input type="text" id="product-unit" formControlName="unit_product" required>
     </fieldset> -->
-  <fieldset>
+  <!-- <fieldset>
     <label for="product-price">*Price € </label>
     <input
       type="text"
@@ -31,8 +31,18 @@
       formControlName="price_product"
       required
     />
+  </fieldset> -->
+<fieldset>
+    <label for="provider-category">*Category </label>
+    <select id="provider-category" formControlName="id_category" required>
+      <option value="" disabled selected>...</option>
+      @for (category of categoryService.categoriesLIst; track $index) {
+      <option [value]="category.id_category">
+        {{ category.name_category }}
+      </option>
+      }
+    </select>
   </fieldset>
-
   <fieldset>
     <label for="product-photo">*Photo </label>
     <input
@@ -43,13 +53,13 @@
       placeholder="Escribe o selecciona una foto..."
     />
     <datalist id="photos">
-      @for (photo of productService.photosList; track $index) {a
-      <option [value]="photo">{{ photo }}</option>
+      @for (photo of productService.productsList; track $index) {a
+      <option [value]="photo">{{ photo.photo_product }}</option>
       }
     </datalist>
   </fieldset>
 </form>
-<pre>* Campos necesarios</pre>
+
 <button (click)="createProduct()" [disabled]="productForm.invalid">
   Crear Proveedor
 </button>
@@ -80,7 +90,7 @@
         <label for="product-unit">*Unit </label>
         <input type="text" id="product-unit" formControlName="unit_product" required>
     </fieldset> -->
-  <fieldset>
+  <!-- <fieldset>
     <label for="product-price">*Price € </label>
     <input
       type="text"
@@ -88,6 +98,17 @@
       formControlName="price_product"
       required
     />
+  </fieldset> -->
+  <fieldset>
+    <label for="provider-category">*Category </label>
+    <select id="provider-category" formControlName="id_category" required>
+      <option value="" disabled selected>...</option>
+      @for (category of categoryService.categoriesLIst; track $index) {
+      <option [value]="category.id_category">
+        {{ category.name_category }}
+      </option>
+      }
+    </select>
   </fieldset>
   <fieldset>
     <label for="product-photo">*Photo </label>
@@ -99,13 +120,13 @@
       placeholder="Escribe o selecciona una foto..."
     />
     <datalist id="photos">
-      @for (photo of productService.photosList; track $index) {a
-      <option [value]="photo">{{ photo }}</option>
+      @for (photo of productService.productsList; track $index) {a
+      <option [value]="photo">{{ photo.photo_product }}</option>
       }
     </datalist>
   </fieldset>
 </form>
-<pre>* Campos necesarios</pre>
+
 <button (click)="updateProduct()" [disabled]="productForm.invalid">
   Actualizar Proveedor
 </button>
@@ -124,8 +145,9 @@
     <!-- <a [routerLink]="[product.id_product]"> -->
     <li>{{ product.name_product }}</li>
     <li>{{ product.description_product }}</li>
+    <li>{{ product.name_category }}</li>
     <!-- <li> {{product.unit_product}} </li> -->
-    <li>{{ product.price_product }} €</li>
+    <!-- <li>{{ product.price_product }} </li> -->
     <img
       [src]="'assets/img/products/' + product.photo_product + '.jpg'"
       alt="{{ product.photo_product }}"

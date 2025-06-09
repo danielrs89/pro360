@@ -15,11 +15,11 @@ export class ProviderService {
     this.providersList = [];
   }
 
-  getProviders() {
+  getAllProviders() {
     return this.http.get<Provider[]>(this.API_URL);
   }
 
-  getProviderId(id: number) {
+  getProviderById(id: number) {
     return this.http.get<Provider>(`${this.API_URL}/${id}`);
   }
 

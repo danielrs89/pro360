@@ -3,6 +3,7 @@ import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { ProductService } from '../../../services/product.service';
 import Product from '../../../models/Product';
+import { CategoryService } from '../../../services/category.service';
 
 @Component({
   selector: 'app-product',
@@ -12,25 +13,29 @@ import Product from '../../../models/Product';
 })
 export class ProductComponent implements OnInit {
   // product?: Product;
-
   productForm: FormGroup;
 
-  constructor(public productService: ProductService) {
+  constructor(
+    public productService: ProductService,
+    public categoryService: CategoryService
+  ) {
     // Inicializa el formulario
     this.productForm = new FormGroup({
       id_product: new FormControl(''),
       name_product: new FormControl(''),
       description_product: new FormControl(''),
-      unit_product: new FormControl(''),
-      price_product: new FormControl(''),
+      // unit_product: new FormControl(''),
+      // price_product: new FormControl(''),
       photo_product: new FormControl(''),
       id_provider: new FormControl(''),
+      id_category: new FormControl(''),
     });
   }
   ngOnInit(): void {
     this.getProducts();
     // se previene que se queden a true en todo los casos
     this.cancelCreateEdit();
+    this.getAllCategories();
   }
 
   cancelCreateEdit() {
@@ -38,7 +43,17 @@ export class ProductComponent implements OnInit {
     this.productService.isEdit = false;
     this.productForm.reset();
   }
-
+  getAllCategories() {
+    this.categoryService.getAllCategories().subscribe({
+      next: (data) => {
+        this.categoryService.categoriesLIst = data;
+      },
+      error: (e) => {
+        console.log('ERROR getAllCategories() => ', e);
+      },
+    });
+  }
+  
   // READ
   getProducts() {
     this.productService.getProduct().subscribe({

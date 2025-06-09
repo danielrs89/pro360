@@ -4,6 +4,7 @@ export default interface Provider {
   name_provider: string;
   email_provider: string;
   phone_provider: string;
-  category_provider: string;
   count_provider: number; // decimal(10,2)
+  id_category: string;
+  name_category?: string;
 }

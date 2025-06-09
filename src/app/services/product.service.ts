@@ -8,22 +8,22 @@ import { HttpClient } from '@angular/common/http';
 export class ProductService {
   readonly API_URL = 'http://localhost:3000/product';
   productsList: Product[];
-  photosList: string[];
+  // photosList: string[];
   isCreate: boolean = false;
   isEdit: boolean = false;
 
   constructor(private http: HttpClient) {
     this.productsList = [];
-    this.photosList = [
-      'chuleton',
-      'aceite',
-      'cola',
-      'haba',
-      'merluza',
-      'tarta',
-      'vino',
-      'calabaza',
-    ];
+    // this.photosList = [
+    //   'chuleton',
+    //   'aceite',
+    //   'cola',
+    //   'haba',
+    //   'merluza',
+    //   'tarta',
+    //   'vino',
+    //   'calabaza',
+    // ];
   }
 
   getProduct() {
