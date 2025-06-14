@@ -7,12 +7,14 @@ import { HttpClient } from '@angular/common/http';
 })
 export class ProductService {
   readonly API_URL = 'http://localhost:3000/product';
+  productsIDList: Product[];
   productsList: Product[];
   // photosList: string[];
   isCreate: boolean = false;
   isEdit: boolean = false;
 
   constructor(private http: HttpClient) {
+    this.productsIDList = [];
     this.productsList = [];
     // this.photosList = [
     //   'chuleton',
@@ -26,7 +28,7 @@ export class ProductService {
     // ];
   }
 
-  getProduct() {
+  getAllProducts() {
     return this.http.get<Product[]>(this.API_URL);
   }
   // los productos del id_provider

@@ -1,87 +1,130 @@
-@if (productService.isCreate) { }@else if (productService.isEdit) {
-<form [formGroup]="productForm">
-  <fieldset>
-    <label for="product-name">*Name </label>
-    <input
-      type="text"
-      id="product-name"
-      formControlName="name_product"
-      readonly
-    />
-  </fieldset>
-  <fieldset>
-    <label for="product-description">*Description</label>
-    <input
-      type="text"
-      id="product-description"
-      formControlName="description_product"
-      readonly
-    />
-  </fieldset>
-  <fieldset>
-    <label for="product-unit">*Unit </label>
-    <input
-      type="text"
-      id="product-unit"
-      formControlName="unit_product"
-      required
-    />
-  </fieldset>
-  <fieldset>
-    <label for="product-price">*Price € </label>
-    <input
-      type="text"
-      id="product-price"
-      formControlName="price_product"
-      readonly
-    />
-  </fieldset>
-  <fieldset>
-    <label for="product-photo">*Photo </label>
-    <input
-      id="product-photo"
-      list="photos"
-      formControlName="photo_product"
-      readonly
-    />
-    <!-- <datalist id="photos">
-      @for (photo of productService.photosList; track $index) {a
-      <option [value]="photo">{{ photo }}</option>
-      }
-    </datalist> -->
-  </fieldset>
-</form>
-<pre>* Campos necesarios</pre>
-<button (click)="updateProduct()" [disabled]="productForm.invalid">
-  Actualizar Proveedor
-</button>
-<button (click)="cancelCreateEdit()">Cancelar</button>
-}@else {
-<!-- <button (click)="handleCreate(true)">Añadir</button> -->
+@if (productService.isCreate) {
+
+<!-- CREATE -->
+<button (click)="cancelCreateEdit()">VOLVER</button>
+<div>
+  <!-- id_provider_product => {{id_provider_product}} -->
+  <!-- provider.id_provider => {{provider.id_provider}} -->
+  @for (provider of providerService.providersList; track $index) {
+  @if(id_provider_product==provider.id_provider){
+
+  <h2>Proveedor: {{ provider.name_provider }}</h2>
+  <h2>Cuenta: {{ provider_count }} €</h2>
+  } }
+</div>
+
+@for (product of productService.productsList; track $index) {
 <ul>
-  @for (product of productService.productsList; track $index) {
   <div style="border: 1px solid black">
-    <!-- <p class="trash-icon" (click)="handleDelete(product.id_product)">🗑️</p> -->
-    <p class="trash-icon" (click)="handleUpdate(product.id_product, true)">
-      🖊️
-    </p>
-    <!-- <a [routerLink]="[product.id_product]"> -->
+    <li>{{ product.name_category }}</li>
     <li>{{ product.name_product }}</li>
     <li>{{ product.description_product }}</li>
-    <!-- <li>{{ product.unit_product }}</li> -->
-    <!-- <li>{{ product.price_product }} €</li> -->
     <img
       [src]="'assets/img/products/' + product.photo_product + '.jpg'"
       alt="{{ product.photo_product }}"
       style="width: 100px"
     />
-    <!-- </a> -->
-    <!-- <button routerLink="/sales">
-            Ventas
-        </button> -->
+
+    <form [formGroup]="productForms[product.id_product]">
+      <fieldset>
+        <label for="pros-unit-{{ product.id_product }}">*Unit</label>
+        <input
+          type="number"
+          id="pros-unit-{{ product.id_product }}"
+          formControlName="unit_pros"
+          min="1"
+        />
+      </fieldset>
+
+      <fieldset>
+        <label for="pros-price-{{ product.id_product }}">*Price €</label>
+        <input
+          type="number"
+          id="pros-price-{{ product.id_product }}"
+          formControlName="price_pros"
+          min="0.00"
+        />
+        <!-- step="0.01" empieza en el decimal-->
+      </fieldset>
+
+      <!-- canBuy => {{ !canBuy(product.id_product) }}
+      <br />
+      getTotal => {{ getTotal(product.id_product) }}
+      <br />
+      count => {{ provider_count }} -->
+
+      @if(getTotal(product.id_product) > provider_count){
+      <p style="color: red">No tienes dinero.</p>
+      }
+      <h2>Total a pagar: {{ getTotal(product.id_product) }} €</h2>
+      <button
+        (click)="handleCreatePros(product.id_product)"
+        [disabled]="
+          productForms[product.id_product].invalid ||
+          getTotal(product.id_product) > provider_count
+        "
+      >
+        Comprar
+      </button>
+    </form>
   </div>
-  }@empty {
-  <h2>No hay productos.</h2>
-  }
 </ul>
+} }@else if (productService.isEdit) {
+
+<!-- UPDATE -->
+ <!-- FALTA PARA VENDER -->
+@for (pros of prosService.prosList; track $index) {
+<ul>
+  <div style="border: 1px solid black">
+    <li>{{ pros.name_product }}</li>
+    <li>{{ pros.description_product }}</li>
+    <li>{{ pros.unit_pros }} Unidades</li>
+    <li>{{ pros.price_pros }} €</li>
+    <img
+      [src]="'assets/img/products/' + pros.photo_product + '.jpg'"
+      alt="{{ pros.photo_product }}"
+      style="width: 100px"
+    />
+    <button class="trash-icon" (click)="handleUpdate(pros.id_product, true)">
+      VENDER
+    </button>
+  </div>
+</ul>
+}@empty {
+<h2>No hay productos.</h2>
 }
+
+}@else {
+
+<!-- READ -->
+<button (click)="handleCreate(true)">COMPRAR</button>
+
+<div>
+  @for (provider of providerService.providersList; track $index) {
+  @if(id_provider_product==provider.id_provider){
+
+  <h2>Proveedor: {{ provider.name_provider }}</h2>
+  <h2>Cuenta: {{ provider.count_provider }} €</h2>
+  } }
+</div>
+
+@for (pros of prosService.prosList; track $index) {
+<ul>
+  <div style="border: 1px solid black">
+    <li>{{ pros.name_product }}</li>
+    <li>{{ pros.description_product }}</li>
+    <li>{{ pros.unit_pros }} Unidades</li>
+    <li>{{ pros.price_pros }} €</li>
+    <img
+      [src]="'assets/img/products/' + pros.photo_product + '.jpg'"
+      alt="{{ pros.photo_product }}"
+      style="width: 100px"
+    />
+    <button class="trash-icon" (click)="handleUpdate(pros.id_product, true)">
+      VENDER
+    </button>
+  </div>
+</ul>
+}@empty {
+<h2>No hay productos.</h2>
+} }

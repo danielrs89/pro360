@@ -5,5 +5,10 @@ export default interface Pros {
   id_product: number;
   id_provider: number;
   id_category: number;
-  name_category?: string;
+  name_product?: string;
+  description_product?: string;
+  photo_product?: string;
+  name_provider?: string;
+  cif_provider?: string;
+  // name_category?: string;
 }

@@ -32,10 +32,11 @@ export class ProductComponent implements OnInit {
     });
   }
   ngOnInit(): void {
-    this.getProducts();
-    // se previene que se queden a true en todo los casos
-    this.cancelCreateEdit();
+    this.getAllProducts();
     this.getAllCategories();
+
+    // previene que se queden a true en todo los casos
+    this.cancelCreateEdit();
   }
 
   cancelCreateEdit() {
@@ -53,10 +54,10 @@ export class ProductComponent implements OnInit {
       },
     });
   }
-  
+
   // READ
-  getProducts() {
-    this.productService.getProduct().subscribe({
+  getAllProducts() {
+    this.productService.getAllProducts().subscribe({
       next: (products) => {
         // Filtra duplicados por name_product
         this.productService.productsList = products.filter(
@@ -91,7 +92,7 @@ export class ProductComponent implements OnInit {
     this.productService.createProduct(this.productForm.value).subscribe({
       next: (data) => {
         console.log('CREATE');
-        this.getProducts();
+        this.getAllProducts();
         this.productService.isCreate = false;
       },
       error: (e) => {
@@ -118,7 +119,7 @@ export class ProductComponent implements OnInit {
     this.productService.updateProduct(this.productForm.value).subscribe({
       next: (data) => {
         console.log('UPDATE');
-        this.getProducts();
+        this.getAllProducts();
         this.productService.isEdit = false;
       },
       error: (e) => {
@@ -138,7 +139,7 @@ export class ProductComponent implements OnInit {
     this.productService.deleteProduct(id).subscribe({
       next: (data) => {
         console.log('DELETE');
-        this.getProducts();
+        this.getAllProducts();
       },
       error: (e) => {
         console.log('ERROR deleteProduct() => ', e.message);
