@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ProductService } from '../../../services/product.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import {
   FormControl,
   FormGroup,
@@ -14,7 +14,7 @@ import { ProviderService } from '../../../services/provider.service';
 
 @Component({
   selector: 'app-product-id',
-  imports: [ReactiveFormsModule, FormsModule],
+  imports: [RouterLink, ReactiveFormsModule, FormsModule],
   templateUrl: './product-id.component.html',
   styleUrl: './product-id.component.css',
 })
@@ -38,11 +38,12 @@ export class ProductIdComponent implements OnInit {
     this.id_provider_product = route.snapshot.params['id'];
   }
   ngOnInit(): void {
-    this.getProviderById(this.id_provider_product);
+    // this.getProviderById(this.id_provider_product);
     // this.getProductById(this.id_provider_product);
     this.getAllProsById(this.id_provider_product);
-    this.getProductByIdUpdate(this.id_provider_product);
-    this.getAllProducts();
+    this.getProviderById(this.id_provider_product);
+    // this.getProductByIdUpdate(this.id_provider_product);
+    // this.getAllProducts();
 
     // se previene que se queden a true en todo los casos
     this.cancelCreateEdit();
@@ -147,39 +148,7 @@ export class ProductIdComponent implements OnInit {
     });
   }
 
-  /**
-   * UPDATE
-   * creando un FormGroup individual por cada producto de un proveedor, y lo guardas en un objeto productForms, usando id_product como clave.
-   */
-  getProductByIdUpdate(id_provider_product: number) {
-    this.productService.getProductById(id_provider_product).subscribe({
-      next: (data) => {
-        this.productService.productsList = data;
-        // Initialize FormGroups for each product in prosList
-        data.forEach((product) => {
-          if (!this.productForms[product.id_product]) {
-            this.productForms[product.id_product] = new FormGroup({
-              unit_pros: new FormControl(this.unit || 0, [
-                Validators.required,
-                Validators.min(1),
-                Validators.max(this.unit || 0), //No puede vender más que tiene
-              ]),
-              price_pros: new FormControl(this.price || 0, [
-                Validators.required,
-                Validators.min(1),
-              ]),
-              id_product: new FormControl(product.id_product),
-              id_provider: new FormControl(this.id_provider_product),
-              id_category: new FormControl(product.id_category),
-            });
-          }
-        });
-      },
-      error: (e) => {
-        console.log('ERROR getAllProsById() => ', e.message);
-      },
-    });
-  }
+  // ESTE BLOQUE ES EL BUENO
 
   // CREATE
   /**
@@ -188,12 +157,10 @@ export class ProductIdComponent implements OnInit {
    */
   handleCreate(isCreate: boolean) {
     // console.log("this.productService.isCreate => ",isCreate);
-
     this.productService.isCreate = isCreate;
     this.getAllProducts();
   }
   /**
-   * CREATE
    * creando un FormGroup individual por cada producto, y lo guardas en un objeto productForms, usando id_product como clave.
    */
   getAllProducts() {
@@ -225,6 +192,7 @@ export class ProductIdComponent implements OnInit {
     // console.log("id_provider_product", this.id_provider_product);
 
     this.updateProviderBuy(this.id_provider_product, id_product);
+
     this.createPros(id_product);
   }
   updateProviderBuy(id_provider_product: number, id_product: number) {
@@ -269,17 +237,26 @@ export class ProductIdComponent implements OnInit {
     // console.log('Enviando a createPros():', form.value);
 
     // console.log('form => ', form.value);
+
+    // seteando los valores del formulario al seleccionar un proveedor
+    const product = this.productService.productsList.find(
+      (p) => p.id_product === id_product
+    );
+    if (product) {
+      form.patchValue(product);
+    }
+
     this.prosService.createPros(form.value).subscribe({
       next: (data) => {
         // console.log('data => ', data);
 
-        alert('Producto comprado con éxito.'); //FALTA ESTILOS lo suyo sería un popup
-        // // this.getAllProsById(this.id_provider_product);
-        form.reset(); // Resetea solo ese formulario
-        // // Ahora recarga los datos actualizados
+        // Recargar los datos
         this.getProviderById(this.id_provider_product);
         this.getAllProsById(this.id_provider_product);
 
+        form.reset(); // Resetea solo ese formulario
+
+        alert('Producto comprado con éxito.'); //FALTA ESTILOS lo suyo sería un popup
         console.log('CREATE ');
       },
       error: (e) => {
@@ -288,22 +265,54 @@ export class ProductIdComponent implements OnInit {
     });
   }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   // UPDATE
+  handleUpdate(isEdit: boolean) {
+    // this.getAllProsById(id);
+
+    this.productService.isEdit = isEdit;
+    this.getProductByIdUpdate(this.id_provider_product);
+    // // seteando los valores del formulario al seleccionar un proveedor
+    // const product = this.productService.productsList.find(
+    //   (p) => p.id_product === id
+    // );
+    // if (product) {
+    //   this.productForm.patchValue(product);
+    // }
+  }
+  /**
+   * UPDATE
+   * creando un FormGroup individual por cada producto de un proveedor,
+   * y lo guardas en un objeto productForms, usando id_product como clave.
+   */
+  getProductByIdUpdate(id_provider_product: number) {
+    this.productService.getProductById(id_provider_product).subscribe({
+      next: (data) => {
+        this.productService.productsList = data;
+        // Initialize FormGroups for each product in prosList
+        data.forEach((product) => {
+          if (!this.productForms[product.id_product]) {
+            this.productForms[product.id_product] = new FormGroup({
+              unit_pros: new FormControl(this.unit || 0, [
+                Validators.required,
+                Validators.min(1),
+                Validators.max(this.unit || 0), //No puede vender más que tiene
+              ]),
+              price_pros: new FormControl(this.price || 0, [
+                Validators.required,
+                Validators.min(1),
+              ]),
+              id_product: new FormControl(product.id_product),
+              id_provider: new FormControl(this.id_provider_product),
+              id_category: new FormControl(product.id_category),
+            });
+          }
+        });
+      },
+      error: (e) => {
+        console.log('ERROR getAllProsById() => ', e.message);
+      },
+    });
+  }
   handleUpdatePros(id_product: number) {
     this.updateProviderSell(this.id_provider_product, id_product);
     this.createPros(id_product);
@@ -336,32 +345,6 @@ export class ProductIdComponent implements OnInit {
       },
     });
   }
-  handleUpdate(id: number, isEdit: boolean) {
-    this.getAllProsById(id);
-
-    this.productService.isEdit = isEdit;
-    // // seteando los valores del formulario al seleccionar un proveedor
-    // const product = this.productService.productsList.find(
-    //   (p) => p.id_product === id
-    // );
-    // if (product) {
-    //   this.productForm.patchValue(product);
-    // }
-  }
-  updateProduct() {
-    // console.log(this.productForm.value);
-    // this.productService.updateProduct(this.productForm.value).subscribe({
-    //   next: (data) => {
-    //     console.log('UPDATE');
-    //     this.getProductById(this.id_provider_product);
-    //     this.productService.isEdit = false;
-    //   },
-    //   error: (e) => {
-    //     console.log('ERROR updateProduct() => ', e.message);
-    //   },
-    // });
-  }
-
   updatePros(id_product: number) {
     const form = this.productForms[id_product];
     console.log('form => ', form.value);
@@ -414,6 +397,20 @@ export class ProductIdComponent implements OnInit {
       },
     });
   }
+
+  // updateProduct() {
+  //   // console.log(this.productForm.value);
+  //   // this.productService.updateProduct(this.productForm.value).subscribe({
+  //   //   next: (data) => {
+  //   //     console.log('UPDATE');
+  //   //     this.getProductById(this.id_provider_product);
+  //   //     this.productService.isEdit = false;
+  //   //   },
+  //   //   error: (e) => {
+  //   //     console.log('ERROR updateProduct() => ', e.message);
+  //   //   },
+  //   // });
+  // }
 
   // DELETE
   handleDelete(id: number) {
