@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ProductService } from '../../../services/product.service';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import {
   FormControl,
   FormGroup,
@@ -11,15 +11,17 @@ import {
 import { CategoryService } from '../../../services/category.service';
 import { ProsService } from '../../../services/pros.service';
 import { ProviderService } from '../../../services/provider.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-product-id',
-  imports: [RouterLink, ReactiveFormsModule, FormsModule],
+  imports: [CommonModule,RouterLink, ReactiveFormsModule, FormsModule],
   templateUrl: './product-id.component.html',
   styleUrl: './product-id.component.css',
 })
 export class ProductIdComponent implements OnInit {
   id_provider_product!: number;
+  id_product_provider!: number;
   provider_count!: number;
   unit?: number;
   price?: number;
@@ -32,7 +34,8 @@ export class ProductIdComponent implements OnInit {
     public categoryService: CategoryService,
     public prosService: ProsService,
     public providerService: ProviderService,
-    public route: ActivatedRoute
+    public route: ActivatedRoute,
+    private router: Router
   ) {
     //obtiene el id del proveedor que es el que tiene los productos
     this.id_provider_product = route.snapshot.params['id'];
@@ -41,12 +44,21 @@ export class ProductIdComponent implements OnInit {
     // this.getProviderById(this.id_provider_product);
     // this.getProductById(this.id_provider_product);
     this.getAllProsById(this.id_provider_product);
-    this.getProviderById(this.id_provider_product);
+    this.getProviderCountById(this.id_provider_product);
     // this.getProductByIdUpdate(this.id_provider_product);
     // this.getAllProducts();
 
     // se previene que se queden a true en todo los casos
     this.cancelCreateEdit();
+  }
+
+  sales(id_product_provider: number) {
+    // console.log('id_product_provider ANTES => ', id_product_provider);
+
+    this.id_product_provider = id_product_provider;
+    // console.log('id_product_provider DESPUES => ', id_product_provider);
+
+    this.handleUpdate(true);
   }
   /**
    * Calcula la cantidad total = (unit * price)
@@ -137,13 +149,13 @@ export class ProductIdComponent implements OnInit {
    * SOLO para tener count MAL
    * @param id_provider_product
    */
-  getProviderById(id_provider_product: number) {
+  getProviderCountById(id_provider_product: number) {
     this.providerService.getProviderById(id_provider_product).subscribe({
       next: (data) => {
         this.provider_count = data.count_provider;
       },
       error: (e) => {
-        console.log('ERROR getAllProviders() => ', e.message);
+        console.log('ERROR getProviderCountById() => ', e.message);
       },
     });
   }
@@ -186,19 +198,26 @@ export class ProductIdComponent implements OnInit {
   /**
    * dentro de compra cuando le das a comprar, actualiza el count del provider y creas un pros con los datos
    * añadir un producto ya creado al proveedor, NO crea un producto
+   * @param id_product
    */
   handleCreatePros(id_product: number) {
     // console.log("id_product", id_product);
     // console.log("id_provider_product", this.id_provider_product);
 
-    this.updateProviderBuy(this.id_provider_product, id_product);
+    this.updateProviderBuy(id_product);
 
     this.createPros(id_product);
   }
-  updateProviderBuy(id_provider_product: number, id_product: number) {
+  /**
+   *
+   * @param id_provider_product
+   * @param id_product
+   * @returns
+   */
+  updateProviderBuy(id_product: number) {
     // si coincide id_provider_product leer datos
     const provider = this.providerService.providersList.find(
-      (p) => (p.id_provider = id_provider_product)
+      (p) => p.id_provider === this.id_provider_product // IMP signo igual = (asignación), no el doble o triple igual === (comparación).
     );
     if (!provider) return;
 
@@ -226,10 +245,15 @@ export class ProductIdComponent implements OnInit {
         // });
       },
       error: (e) => {
-        console.log('ERROR updateProvider()/getProviderById => ', e.message);
+        console.log('ERROR updateProviderBuy() => ', e.message);
       },
     });
   }
+  /**
+   *
+   * @param id_product
+   * @returns
+   */
   createPros(id_product: number) {
     const form = this.productForms[id_product];
 
@@ -238,25 +262,32 @@ export class ProductIdComponent implements OnInit {
 
     // console.log('form => ', form.value);
 
+    // MUY IMP
     // seteando los valores del formulario al seleccionar un proveedor
     const product = this.productService.productsList.find(
       (p) => p.id_product === id_product
     );
+
+    // console.log("product => ", product);
+
     if (product) {
       form.patchValue(product);
     }
+
+    // console.log("form.value => ", form.value );
 
     this.prosService.createPros(form.value).subscribe({
       next: (data) => {
         // console.log('data => ', data);
 
         // Recargar los datos
-        this.getProviderById(this.id_provider_product);
+        this.getProviderCountById(this.id_provider_product);
         this.getAllProsById(this.id_provider_product);
 
         form.reset(); // Resetea solo ese formulario
 
         alert('Producto comprado con éxito.'); //FALTA ESTILOS lo suyo sería un popup
+
         console.log('CREATE ');
       },
       error: (e) => {
@@ -267,17 +298,9 @@ export class ProductIdComponent implements OnInit {
 
   // UPDATE
   handleUpdate(isEdit: boolean) {
-    // this.getAllProsById(id);
-
     this.productService.isEdit = isEdit;
     this.getProductByIdUpdate(this.id_provider_product);
-    // // seteando los valores del formulario al seleccionar un proveedor
-    // const product = this.productService.productsList.find(
-    //   (p) => p.id_product === id
-    // );
-    // if (product) {
-    //   this.productForm.patchValue(product);
-    // }
+    // this.getAllProsById(id);
   }
   /**
    * UPDATE
@@ -285,67 +308,118 @@ export class ProductIdComponent implements OnInit {
    * y lo guardas en un objeto productForms, usando id_product como clave.
    */
   getProductByIdUpdate(id_provider_product: number) {
-    this.productService.getProductById(id_provider_product).subscribe({
+    this.prosService.getAllProsById(id_provider_product).subscribe({
       next: (data) => {
-        this.productService.productsList = data;
-        // Initialize FormGroups for each product in prosList
+        this.prosService.prosList = data;
         data.forEach((product) => {
-          if (!this.productForms[product.id_product]) {
+          const form = this.productForms[product.id_product];
+
+          if (!form) {
             this.productForms[product.id_product] = new FormGroup({
-              unit_pros: new FormControl(this.unit || 0, [
+              unit_pros: new FormControl(product.unit_pros ?? 0, [
                 Validators.required,
                 Validators.min(1),
-                Validators.max(this.unit || 0), //No puede vender más que tiene
+                Validators.max(product.unit_pros),
               ]),
-              price_pros: new FormControl(this.price || 0, [
+              price_pros: new FormControl(product.price_pros ?? 0, [
                 Validators.required,
-                Validators.min(1),
+                Validators.min(0.01),
               ]),
               id_product: new FormControl(product.id_product),
-              id_provider: new FormControl(this.id_provider_product),
+              id_provider: new FormControl(id_provider_product),
               id_category: new FormControl(product.id_category),
             });
-          }
+          } 
+          // else {
+          //   // FALTA esto para que vale?¿?¿ siempre va haber producto
+          //   form.patchValue({
+          //     unit_pros: product.unit_pros ?? 0,
+          //     price_pros: product.price_pros ?? 0,
+          //     id_product: product.id_product,
+          //     id_provider: id_provider_product,
+          //     id_category: product.id_category,
+          //   });
+          // }
         });
       },
       error: (e) => {
-        console.log('ERROR getAllProsById() => ', e.message);
+        console.log('ERROR getProductByIdUpdate() => ', e.message);
       },
     });
   }
   handleUpdatePros(id_product: number) {
     this.updateProviderSell(this.id_provider_product, id_product);
-    this.createPros(id_product);
+    this.updatePros(id_product);
   }
 
   updateProviderSell(id_provider_product: number, id_product: number) {
-    this.providerService.getProviderById(id_provider_product).subscribe({
-      next: (data) => {
-        const provider = {
-          id_provider: data.id_provider,
-          name_provider: data.name_provider,
-          email_provider: data.email_provider,
-          phone_provider: data.phone_provider,
-          cif_provider: data.cif_provider,
-          count_provider: data.count_provider + this.getTotal(id_product),
-          id_category: data.id_category,
-        };
+// si coincide id_provider_product leer datos
+    const provider = this.providerService.providersList.find(
+      (p) => p.id_provider === this.id_provider_product // IMP signo igual = (asignación), no el doble o triple igual === (comparación).
+    );
+    if (!provider) return;
 
-        this.providerService.updateProvider(provider).subscribe({
-          next: (data) => {
-            console.log('UPDATE PROVIDER COUNT');
-          },
-          error: (e) => {
-            console.log('ERROR updateProvider() => ', e.message);
-          },
-        });
+    // console.log('PROVIDER => ', provider);
+
+    // actualiza count
+    const updateProvider = {
+      ...provider,
+      count_provider: provider.count_provider + this.getTotal(id_product),
+    };
+
+    this.providerService.updateProvider(updateProvider).subscribe({
+      next: (data) => {
+        console.log('UPDATE PROVIDER SELL');
       },
       error: (e) => {
-        console.log('ERROR updateProvider()/getProviderById => ', e.message);
+        console.log('ERROR updateProviderSell() => ', e.message);
       },
     });
+
+    
   }
   updatePros(id_product: number) {
+  const form = this.productForms[id_product];
+  if (!form || form.invalid) return;
+
+  const unidadesVendidas = Number(form.get('unit_pros')?.value);
+  const precioNuevo = Number(form.get('price_pros')?.value);
+
+  if (isNaN(unidadesVendidas) || isNaN(precioNuevo)) {
+    alert('Valores inválidos. Por favor, introduce números válidos.');
+    return;
+  }
+
+  const pros = this.prosService.prosList.find(p => p.id_product === id_product);
+  if (!pros) {
+    console.warn(`Producto con ID ${id_product} no encontrado.`);
+    return;
+  }
+
+  const updatedPros = {
+    ...pros,
+    unit_pros: pros.unit_pros - unidadesVendidas,
+    price_pros: precioNuevo,
+  };
+
+  this.prosService.updatePros(updatedPros).subscribe({
+    next: () => {
+      this.getProviderCountById(this.id_provider_product);
+      this.getAllProsById(this.id_provider_product);
+      this.updateProviderSell(this.id_provider_product, id_product);
+
+      form.reset();
+
+      alert('Venta realizada con éxito.');
+      console.log(`Producto ${id_product} actualizado con éxito.`);
+    },
+    error: (e) => {
+      console.error('Error al actualizar el producto:', e.message);
+    },
+  });
+}
+
+  _updatePros(id_product: number) {
     const form = this.productForms[id_product];
     console.log('form => ', form.value);
 
@@ -354,8 +428,8 @@ export class ProductIdComponent implements OnInit {
     const unidadesVendidas = Number(form.get('unit_pros')?.value);
     const precioNuevo = Number(form.get('price_pros')?.value);
     // const unidadesVendidas = form.get('unit_pros')?.value;
-    console.log('unidadesVendidas => ', unidadesVendidas);
-    console.log('precioNuevo => ', precioNuevo);
+    // console.log('unidadesVendidas => ', unidadesVendidas);
+    // console.log('precioNuevo => ', precioNuevo);
 
     if (isNaN(unidadesVendidas) || isNaN(precioNuevo)) {
       alert('Valores inválidos');
@@ -382,15 +456,18 @@ export class ProductIdComponent implements OnInit {
     // 3. Actualizar el producto en la base de datos
     this.prosService.updatePros(updatedPros).subscribe({
       next: () => {
+        // Recargar los datos
+        this.getProviderCountById(this.id_provider_product); // solo count
+        this.getAllProsById(this.id_provider_product);
         // 4. Sumar dinero al proveedor
         this.updateProviderSell(this.id_provider_product, id_product);
 
-        alert('Venta realizada con éxito.');
         form.reset();
 
-        // Recargar los datos
-        this.getProviderById(this.id_provider_product);
-        this.getAllProsById(this.id_provider_product);
+        alert('Venta realizada con éxito.'); //FALTA ESTILOS lo suyo sería un popup
+
+        console.log('UPDATE PROS');
+
       },
       error: (e) => {
         console.log('ERROR updatePros() => ', e.message);
