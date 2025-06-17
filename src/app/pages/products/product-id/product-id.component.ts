@@ -11,11 +11,11 @@ import {
 import { CategoryService } from '../../../services/category.service';
 import { ProsService } from '../../../services/pros.service';
 import { ProviderService } from '../../../services/provider.service';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DecimalPipe } from '@angular/common';
 
 @Component({
   selector: 'app-product-id',
-  imports: [CommonModule,RouterLink, ReactiveFormsModule, FormsModule],
+  imports: [CommonModule, RouterLink, ReactiveFormsModule, FormsModule],
   templateUrl: './product-id.component.html',
   styleUrl: './product-id.component.css',
 })
@@ -38,11 +38,12 @@ export class ProductIdComponent implements OnInit {
     private router: Router
   ) {
     //obtiene el id del proveedor que es el que tiene los productos
-    this.id_provider_product = route.snapshot.params['id'];
+    this.id_provider_product = Number(route.snapshot.params['id']); // Convierte el valor a número al asignarlo
   }
   ngOnInit(): void {
     // this.getProviderById(this.id_provider_product);
     // this.getProductById(this.id_provider_product);
+    // this.getAllProviders();
     this.getAllProsById(this.id_provider_product);
     this.getProviderCountById(this.id_provider_product);
     // this.getProductByIdUpdate(this.id_provider_product);
@@ -69,6 +70,7 @@ export class ProductIdComponent implements OnInit {
     const form = this.productForms[id_product];
     this.unit = Number(form.get('unit_pros')?.value) || 0;
     this.price = Number(form.get('price_pros')?.value) || 0;
+    // console.log(`getTotal: unidades=${this.unit}, precio=${this.price}, total=${this.unit * this.price}`);
     return this.unit * this.price;
   }
 
@@ -96,6 +98,17 @@ export class ProductIdComponent implements OnInit {
     for (const form of Object.values(this.productForms)) {
       form.reset(); // ✅ Llamar correctamente a reset()
     }
+  }
+
+  getAllProviders() {
+    this.providerService.getAllProviders().subscribe({
+      next: (data) => {
+        this.providerService.providersList = data;
+      },
+      error: (e) => {
+        console.log('ERROR getAllProviders() => ', e.message);
+      },
+    });
   }
 
   // READ
@@ -235,14 +248,7 @@ export class ProductIdComponent implements OnInit {
       next: (data) => {
         console.log('PROVIDER UPDATE');
 
-        // this.providerService.updateProvider(provider).subscribe({
-        //   next: (data) => {
-        //     console.log('UPDATE PROVIDER COUNT');
-        //   },
-        //   error: (e) => {
-        //     console.log('ERROR updateProvider() => ', e.message);
-        //   },
-        // });
+      
       },
       error: (e) => {
         console.log('ERROR updateProviderBuy() => ', e.message);
@@ -314,32 +320,22 @@ export class ProductIdComponent implements OnInit {
         data.forEach((product) => {
           const form = this.productForms[product.id_product];
 
-          if (!form) {
-            this.productForms[product.id_product] = new FormGroup({
-              unit_pros: new FormControl(product.unit_pros ?? 0, [
-                Validators.required,
-                Validators.min(1),
-                Validators.max(product.unit_pros),
-              ]),
-              price_pros: new FormControl(product.price_pros ?? 0, [
-                Validators.required,
-                Validators.min(0.01),
-              ]),
-              id_product: new FormControl(product.id_product),
-              id_provider: new FormControl(id_provider_product),
-              id_category: new FormControl(product.id_category),
-            });
-          } 
-          // else {
-          //   // FALTA esto para que vale?¿?¿ siempre va haber producto
-          //   form.patchValue({
-          //     unit_pros: product.unit_pros ?? 0,
-          //     price_pros: product.price_pros ?? 0,
-          //     id_product: product.id_product,
-          //     id_provider: id_provider_product,
-          //     id_category: product.id_category,
-          //   });
-          // }
+          
+          this.productForms[product.id_product] = new FormGroup({
+            unit_pros: new FormControl(product.unit_pros, [
+              Validators.required,
+              Validators.min(1),
+              Validators.max(product.unit_pros),
+            ]),
+            price_pros: new FormControl(product.price_pros ?? 0, [
+              Validators.required,
+              Validators.min(0.01),
+            ]),
+            id_product: new FormControl(product.id_product),
+            id_provider: new FormControl(id_provider_product),
+            id_category: new FormControl(product.id_category),
+          });
+        
         });
       },
       error: (e) => {
@@ -348,126 +344,77 @@ export class ProductIdComponent implements OnInit {
     });
   }
   handleUpdatePros(id_product: number) {
-    this.updateProviderSell(this.id_provider_product, id_product);
+    // console.log('id_product =>', id_product);
+    // console.log('id_provider_product =>', this.id_provider_product);
+    // this.updateProviderSell(this.id_provider_product, id_product);
     this.updatePros(id_product);
   }
+  updateProviderSell(id_product: number) {
+    this.providerService.getAllProviders().subscribe((data) => {
+      this.providerService.providersList = data;
 
-  updateProviderSell(id_provider_product: number, id_product: number) {
-// si coincide id_provider_product leer datos
-    const provider = this.providerService.providersList.find(
-      (p) => p.id_provider === this.id_provider_product // IMP signo igual = (asignación), no el doble o triple igual === (comparación).
-    );
-    if (!provider) return;
+      // console.log('providersList:', this.providerService.providersList);
+      // console.log('this.id_provider_product:', typeof this.id_provider_product);
 
-    // console.log('PROVIDER => ', provider);
+      const provider = this.providerService.providersList.find(
+        (p) => p.id_provider === this.id_provider_product
+      );
+      if (!provider) return;
 
-    // actualiza count
-    const updateProvider = {
-      ...provider,
-      count_provider: provider.count_provider + this.getTotal(id_product),
-    };
+      const updateProvider = {
+        ...provider,
+        count_provider:
+          Number(provider.count_provider) + this.getTotal(id_product),
+      };
 
-    this.providerService.updateProvider(updateProvider).subscribe({
-      next: (data) => {
-        console.log('UPDATE PROVIDER SELL');
-      },
-      error: (e) => {
-        console.log('ERROR updateProviderSell() => ', e.message);
-      },
+      this.providerService.updateProvider(updateProvider).subscribe({
+        next: () => {
+          console.log('UPDATE PROVIDER SELL');
+        },
+        error: (e) => {
+          console.log('ERROR updateProviderSell() => ', e.message);
+        },
+      });
     });
-
-    
   }
+
   updatePros(id_product: number) {
-  const form = this.productForms[id_product];
-  if (!form || form.invalid) return;
-
-  const unidadesVendidas = Number(form.get('unit_pros')?.value);
-  const precioNuevo = Number(form.get('price_pros')?.value);
-
-  if (isNaN(unidadesVendidas) || isNaN(precioNuevo)) {
-    alert('Valores inválidos. Por favor, introduce números válidos.');
-    return;
-  }
-
-  const pros = this.prosService.prosList.find(p => p.id_product === id_product);
-  if (!pros) {
-    console.warn(`Producto con ID ${id_product} no encontrado.`);
-    return;
-  }
-
-  const updatedPros = {
-    ...pros,
-    unit_pros: pros.unit_pros - unidadesVendidas,
-    price_pros: precioNuevo,
-  };
-
-  this.prosService.updatePros(updatedPros).subscribe({
-    next: () => {
-      this.getProviderCountById(this.id_provider_product);
-      this.getAllProsById(this.id_provider_product);
-      this.updateProviderSell(this.id_provider_product, id_product);
-
-      form.reset();
-
-      alert('Venta realizada con éxito.');
-      console.log(`Producto ${id_product} actualizado con éxito.`);
-    },
-    error: (e) => {
-      console.error('Error al actualizar el producto:', e.message);
-    },
-  });
-}
-
-  _updatePros(id_product: number) {
     const form = this.productForms[id_product];
-    console.log('form => ', form.value);
-
-    if (form.invalid) return;
+    if (!form || form.invalid) return;
 
     const unidadesVendidas = Number(form.get('unit_pros')?.value);
     const precioNuevo = Number(form.get('price_pros')?.value);
-    // const unidadesVendidas = form.get('unit_pros')?.value;
-    // console.log('unidadesVendidas => ', unidadesVendidas);
-    // console.log('precioNuevo => ', precioNuevo);
 
     if (isNaN(unidadesVendidas) || isNaN(precioNuevo)) {
-      alert('Valores inválidos');
+      alert('Valores inválidos. Por favor, introduce números válidos.');
       return;
     }
 
-    // 1. Obtener el producto original
     const pros = this.prosService.prosList.find(
       (p) => p.id_product === id_product
     );
     if (!pros) return;
 
-    console.log('pros => ', pros);
-
-    // 2. Restar las unidades vendidas
     const updatedPros = {
       ...pros,
       unit_pros: pros.unit_pros - unidadesVendidas,
       price_pros: precioNuevo,
     };
 
-    console.log('updatedPros => ', updatedPros);
-
-    // 3. Actualizar el producto en la base de datos
     this.prosService.updatePros(updatedPros).subscribe({
       next: () => {
-        // Recargar los datos
-        this.getProviderCountById(this.id_provider_product); // solo count
+        this.updateProviderSell(id_product);
+        this.getProviderCountById(this.id_provider_product);
         this.getAllProsById(this.id_provider_product);
-        // 4. Sumar dinero al proveedor
-        this.updateProviderSell(this.id_provider_product, id_product);
 
-        form.reset();
-
-        alert('Venta realizada con éxito.'); //FALTA ESTILOS lo suyo sería un popup
-
+        // form.reset();
+                if (updatedPros.unit_pros <= 0) {
+        this.deleteProduct(updatedPros.id_pros); // ⬅️ Eliminar si queda a 0
+      } else {
+        alert('Venta realizada con éxito.');
         console.log('UPDATE PROS');
-
+      }
+        
       },
       error: (e) => {
         console.log('ERROR updatePros() => ', e.message);
@@ -475,29 +422,21 @@ export class ProductIdComponent implements OnInit {
     });
   }
 
-  // updateProduct() {
-  //   // console.log(this.productForm.value);
-  //   // this.productService.updateProduct(this.productForm.value).subscribe({
-  //   //   next: (data) => {
-  //   //     console.log('UPDATE');
-  //   //     this.getProductById(this.id_provider_product);
-  //   //     this.productService.isEdit = false;
-  //   //   },
-  //   //   error: (e) => {
-  //   //     console.log('ERROR updateProduct() => ', e.message);
-  //   //   },
-  //   // });
-  // }
-
   // DELETE
-  handleDelete(id: number) {
+  handleDelete(id_pros: number) {
     const confirmed = confirm('¿Segura que quieres borrar?');
     if (confirmed) {
-      this.deleteProduct();
+      this.deleteProduct(id_pros);
     }
   }
-  deleteProduct() {
-    console.log('DELETE');
-    // aqui hay que borrar el producto que tiene el proveedor no el producto en si
+  deleteProduct(id_pros: number) {
+    this.prosService.deletePros(id_pros).subscribe({
+      next: () => {
+        console.log('DELETE');
+      },
+      error: (e) => {
+        console.log('ERROR deleteProduct() => ', e.message);
+      },
+    });
   }
 }

@@ -13,8 +13,8 @@ export class ProsService {
     this.prosList = [];
   }
 
-  getAllProsById(id: number) {
-    return this.http.get<Pros[]>(`${this.API_URL}/${id}`);
+  getAllProsById(id_provider: number) {
+    return this.http.get<Pros[]>(`${this.API_URL}/${id_provider}`);
   }
   createPros(pros: Pros) {
     return this.http.post<Pros>(this.API_URL, pros);
@@ -22,5 +22,9 @@ export class ProsService {
 
   updatePros(pros: Pros) {
     return this.http.put<Pros>(`${this.API_URL}/${pros.id_pros}`, pros);
+  }
+
+  deletePros(id_pros: number) {
+    return this.http.delete<Pros>(`${this.API_URL}/${id_pros}`);
   }
 }

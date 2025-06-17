@@ -122,9 +122,13 @@ id_product_provider) {
 
       <!-- PRECIO RECOMENDADO -->
       <h2>
-        Precio recomendado: {{ pros.price_pros * 1.05 | number : "1.1-2" }} €
+        Precio recomendado por unidad:
+        {{ pros.price_pros * 1.05 | number : "1.1-2" }} €
       </h2>
-      <h2>Total a vender: {{ getTotal(pros.id_product) }} €</h2>
+      <h2>
+        Total a vender: {{ getTotal(pros.id_product) | number : "1.1-2" }} €
+      </h2>
+
       <button
         (click)="handleUpdatePros(pros.id_product)"
         [disabled]="productForms[pros.id_product].invalid"
