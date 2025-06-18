@@ -117,18 +117,18 @@ export class ProductIdComponent implements OnInit {
    * Los productos de un provider
    * @param id_provider_product
    */
-  getProductById(id_provider_product: number) {
-    this.productService.getProductById(id_provider_product).subscribe({
-      next: (data) => {
-        // console.log(data);
+  // getProductById(id_provider_product: number) {
+  //   this.productService.getProductById(id_provider_product).subscribe({
+  //     next: (data) => {
+  //       // console.log(data);
 
-        this.productService.productsIDList = data;
-      },
-      error: (e) => {
-        console.log('ERROR getProductById() => ', e.message);
-      },
-    });
-  }
+  //       this.productService.productsIDList = data;
+  //     },
+  //     error: (e) => {
+  //       console.log('ERROR getProductById() => ', e.message);
+  //     },
+  //   });
+  // }
   /**
    * READ
    * Los pros de un provider
@@ -140,6 +140,7 @@ export class ProductIdComponent implements OnInit {
         this.prosService.prosList = data;
       },
       error: (e) => {
+        // this.router.navigate(['provider',this.id_provider_product])
         console.log('ERROR getAllProsById() => ', e.message);
       },
     });
@@ -247,8 +248,6 @@ export class ProductIdComponent implements OnInit {
     this.providerService.updateProvider(updateProvider).subscribe({
       next: (data) => {
         console.log('PROVIDER UPDATE');
-
-      
       },
       error: (e) => {
         console.log('ERROR updateProviderBuy() => ', e.message);
@@ -320,7 +319,6 @@ export class ProductIdComponent implements OnInit {
         data.forEach((product) => {
           const form = this.productForms[product.id_product];
 
-          
           this.productForms[product.id_product] = new FormGroup({
             unit_pros: new FormControl(product.unit_pros, [
               Validators.required,
@@ -335,7 +333,6 @@ export class ProductIdComponent implements OnInit {
             id_provider: new FormControl(id_provider_product),
             id_category: new FormControl(product.id_category),
           });
-        
         });
       },
       error: (e) => {
@@ -408,13 +405,25 @@ export class ProductIdComponent implements OnInit {
         this.getAllProsById(this.id_provider_product);
 
         // form.reset();
-                if (updatedPros.unit_pros <= 0) {
-        this.deleteProduct(updatedPros.id_pros); // ⬅️ Eliminar si queda a 0
-      } else {
-        alert('Venta realizada con éxito.');
-        console.log('UPDATE PROS');
-      }
-        
+        if (updatedPros.unit_pros <= 0) {
+          this.deleteProduct(updatedPros.id_pros); // ⬅️ Eliminar si queda a 0
+          alert('Venta realizada con éxito.');
+          console.log('DELETE PROS');
+          this.router.navigate(['provider']);
+          // SERIA LO SUYO PERO NO ME RECARGA COUNT QUE MUESTRA
+          // // Forzar recarga
+          // this.router
+          //   .navigateByUrl('/', { skipLocationChange: true })
+          //   .then(() => {
+          //     this.router.navigate([
+          //       '/product',
+          //       Number(this.id_provider_product),
+          //     ]);
+          //   });
+        } else {
+          console.log('UPDATE PROS');
+          this.router.navigate(['provider']);
+        }
       },
       error: (e) => {
         console.log('ERROR updatePros() => ', e.message);
