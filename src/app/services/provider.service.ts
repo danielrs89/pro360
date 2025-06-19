@@ -8,8 +8,6 @@ import Provider from '../models/Provider';
 export class ProviderService {
   readonly API_URL = 'http://localhost:3000/provider';
   providersList: Provider[];
-  isCreate: boolean = false;
-  isEdit: boolean = false;
 
   constructor(private http: HttpClient) {
     this.providersList = [];
@@ -18,23 +16,21 @@ export class ProviderService {
   getAllProviders() {
     return this.http.get<Provider[]>(this.API_URL);
   }
-
-  getProviderById(id: number) {
-    return this.http.get<Provider>(`${this.API_URL}/${id}`);
+  getProviderById(id_provider: number) {
+    return this.http.get<Provider>(`${this.API_URL}/${id_provider}`);
   }
-
   createProvider(provider: Provider) {
     return this.http.post<Provider>(this.API_URL, provider);
   }
-
   updateProvider(provider: Provider) {
-    return this.http.put<Provider>(
-      `${this.API_URL}/${provider.id_provider}`,
-      provider
-    );
+    return this.http.put<Provider>(`${this.API_URL}/${provider.id_provider}`, provider);
+  }
+  deleteProvider(id_provider: number) {
+    return this.http.delete<Provider>(`${this.API_URL}/${id_provider}`);
   }
 
-  deleteProvider(id: number) {
-    return this.http.delete<Provider>(`${this.API_URL}/${id}`);
+  // muestra los providers que tienen el mismo producto
+  getProvidersByProduct(id_product:number){
+    return this.http.get<Provider[]>(`${this.API_URL}/${id_product}`)
   }
 }
