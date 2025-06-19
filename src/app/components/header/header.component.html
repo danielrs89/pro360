@@ -1,5 +1,5 @@
 <header>
-  <a routerLink="/"><h1>pro360</h1></a>
+  <!-- <a routerLink="/"><h1>pro360</h1></a>
   <nav>
     <ul>
       <li><a routerLink="/category">Categorías</a></li>
@@ -8,5 +8,62 @@
       <li><a routerLink="/sales">Ventas</a></li>
       <li><a routerLink="/report">Informes</a></li>
     </ul>
+  </nav> -->
+  <nav class="navbar bg-body-tertiary">
+    <a class="navbar-brand" routerLink="/">
+      <div class="container d-flex align-items-center">
+
+        <img src="./assets/img/icons/load.png"  alt="load" width="60" height="60"/>
+
+        <h1>pro360</h1>
+      </div>
+    </a>
+    <!-- <div class="container">
+      <a class="navbar-brand" routerLink="/category">
+        <img src="./assets/img/icons/category.png" alt="category" width="30" />
+        category
+      </a>
+    </div> -->
+    <div class="container">
+      <a class="navbar-brand" routerLink="/product">
+        <img src="./assets/img/icons/product.png" alt="product" width="30" />
+        Productos
+      </a>
+    </div>
+    <div class="container">
+      <a class="navbar-brand" routerLink="/provider">
+        <img src="./assets/img/icons/provider.png" alt="provider" width="30" />
+        Proveedores
+      </a>
+    </div>
+    <div class="container">
+      <a class="navbar-brand" routerLink="/sales">
+        <img src="./assets/img/icons/sales.png" alt="sales" width="30" />
+        Ventas
+      </a>
+    </div>
+    <div class="container">
+      <a class="navbar-brand" routerLink="/report">
+        <img src="./assets/img/icons/report.png" alt="report" width="30" />
+        Informes
+      </a>
+    </div>
   </nav>
 </header>
+
+<label for="customRange4" class="form-label">Example range</label>
+<input type="range" class="form-range" min="0" max="100" value="50" id="customRange4">
+<output for="customRange4" id="rangeValue" aria-hidden="true"></output>
+
+<script>
+  // This is an example script, please modify as needed
+  const rangeInput = document.getElementById('customRange4');
+  const rangeOutput = document.getElementById('rangeValue');
+
+  // Set initial value
+  rangeOutput.textContent = rangeInput.value;
+
+  rangeInput.addEventListener('input', function() {
+    rangeOutput.textContent = this.value;
+  });
+</script>

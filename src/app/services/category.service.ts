@@ -6,7 +6,6 @@ import Category from '../models/Category';
   providedIn: 'root',
 })
 export class CategoryService {
-
   readonly API_URL = 'http://localhost:3000/category';
   categoriesLIst: Category[];
 
