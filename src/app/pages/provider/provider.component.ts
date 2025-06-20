@@ -4,6 +4,7 @@ import { Router, RouterLink } from '@angular/router';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import Provider from '../../models/Provider';
 import { CategoryService } from '../../services/category.service';
+import { HandleService } from '../../services/handle.service';
 
 @Component({
   selector: 'app-provider',
@@ -24,7 +25,8 @@ export class ProviderComponent implements OnInit {
 
   constructor(
     public providerService: ProviderService,
-    public categoryService: CategoryService // private router: Router
+    public categoryService: CategoryService,
+    public handleService: HandleService // private router: Router
   ) {
     // this.idSelected = 0;
 
@@ -56,8 +58,11 @@ export class ProviderComponent implements OnInit {
     this.getAllCategories();
   }
   cancelCreateEdit() {
-    this.providerService.isCreate = false;
-    this.providerService.isEdit = false;
+    // se previene que se queden a true en todo los casos
+    this.handleService.handleCreate(false);
+    this.handleService.handleEdit(false);
+    // this.providerService.isCreate = false;
+    // this.providerService.isEdit = false;
     this.providerForm.reset();
   }
 
@@ -86,7 +91,8 @@ export class ProviderComponent implements OnInit {
 
   // CREATE
   handleCreate(isCreate: boolean) {
-    this.providerService.isCreate = isCreate;
+    this.handleService.handleCreate(true);
+    
   }
   createProvider() {
     // console.log("Datos del formulario =>", this.providerForm.value);
@@ -96,7 +102,7 @@ export class ProviderComponent implements OnInit {
         // console.log("Datos que se envía al servidor", data);
         console.log('CREATE');
         this.getProviders();
-        this.providerService.isCreate = false;
+        this.handleService.handleCreate(false);
       },
       error: (e) => {
         console.log('ERROR createProvider() => ', e.message);
@@ -106,7 +112,7 @@ export class ProviderComponent implements OnInit {
 
   // UPDATE
   handleUpdate(id: number, isEdit: boolean) {
-    this.providerService.isEdit = isEdit;
+    this.handleService.handleEdit(true);
 
     // seteando los valores del formulario al seleccionar un proveedor
     const provider = this.providerService.providersList.find(
@@ -125,7 +131,8 @@ export class ProviderComponent implements OnInit {
         // console.log("Datos que se envía al servidor", data);
         console.log('UPDATE');
         this.getProviders();
-        this.providerService.isEdit = false;
+        
+    this.handleService.handleEdit(false);
       },
       error: (e) => {
         console.log('ERROR updateProvider() => ', e.message);

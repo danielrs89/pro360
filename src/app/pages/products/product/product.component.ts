@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 import { ProductService } from '../../../services/product.service';
 import Product from '../../../models/Product';
 import { CategoryService } from '../../../services/category.service';
+import { HandleService } from '../../../services/handle.service';
 
 @Component({
   selector: 'app-product',
@@ -17,7 +18,8 @@ export class ProductComponent implements OnInit {
 
   constructor(
     public productService: ProductService,
-    public categoryService: CategoryService
+    public categoryService: CategoryService,
+    public handleService: HandleService // private router: Router
   ) {
     // Inicializa el formulario
     this.productForm = new FormGroup({
@@ -40,8 +42,8 @@ export class ProductComponent implements OnInit {
   }
 
   cancelCreateEdit() {
-    this.productService.isCreate = false;
-    this.productService.isEdit = false;
+    this.handleService.handleCreate(false);
+    this.handleService.handleEdit(false);
     this.productForm.reset();
   }
   getAllCategories() {
@@ -75,7 +77,8 @@ export class ProductComponent implements OnInit {
 
   // CREATE
   handleCreate(isCreate: boolean) {
-    this.productService.isCreate = isCreate;
+    this.handleService.handleCreate(true);
+   
   }
   createProduct() {
     const newProduct = this.productForm.value;
@@ -93,7 +96,8 @@ export class ProductComponent implements OnInit {
       next: (data) => {
         console.log('CREATE');
         this.getAllProducts();
-        this.productService.isCreate = false;
+        this.handleService.handleCreate(false);
+    
       },
       error: (e) => {
         console.log('ERROR createProduct() => ', e.message);
@@ -103,7 +107,8 @@ export class ProductComponent implements OnInit {
 
   // UPDATE
   handleUpdate(id: number, isEdit: boolean) {
-    this.productService.isEdit = isEdit;
+ 
+    this.handleService.handleEdit(true);
 
     // seteando los valores del formulario al seleccionar un proveedor
     const product = this.productService.productsList.find(
@@ -120,7 +125,8 @@ export class ProductComponent implements OnInit {
       next: (data) => {
         console.log('UPDATE');
         this.getAllProducts();
-        this.productService.isEdit = false;
+        
+    this.handleService.handleEdit(false);
       },
       error: (e) => {
         console.log('ERROR updateProduct() => ', e.message);

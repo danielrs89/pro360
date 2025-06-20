@@ -1,4 +1,4 @@
-@if(providerService.isCreate){
+@if(handleService.isCreate){
 <!-- CREATE -->
 <form [formGroup]="providerForm">
   <fieldset>
@@ -65,7 +65,7 @@
 </button>
 <button (click)="cancelCreateEdit()">Cancelar</button>
 
-}@else if (providerService.isEdit) {
+}@else if (handleService.isEdit) {
 <!-- UPDATE -->
 <form [formGroup]="providerForm">
   <fieldset>
