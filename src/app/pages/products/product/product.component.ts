@@ -1,155 +1,191 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
 import { ProductService } from '../../../services/product.service';
-import Product from '../../../models/Product';
 import { CategoryService } from '../../../services/category.service';
 import { HandleService } from '../../../services/handle.service';
 
 @Component({
   selector: 'app-product',
+  standalone: true,
   imports: [ReactiveFormsModule],
   templateUrl: './product.component.html',
   styleUrl: './product.component.css',
 })
 export class ProductComponent implements OnInit {
-  // product?: Product;
   productForm: FormGroup;
+  selectedFile: File | null = null;
 
   constructor(
     public productService: ProductService,
     public categoryService: CategoryService,
-    public handleService: HandleService // private router: Router
+    public handleService: HandleService
   ) {
-    // Inicializa el formulario
     this.productForm = new FormGroup({
       id_product: new FormControl(''),
       name_product: new FormControl(''),
       description_product: new FormControl(''),
-      // unit_product: new FormControl(''),
-      // price_product: new FormControl(''),
       photo_product: new FormControl(''),
       id_provider: new FormControl(''),
       id_category: new FormControl(''),
     });
   }
-  ngOnInit(): void {
-    this.getAllProducts();
-    this.getAllCategories();
 
-    // previene que se queden a true en todo los casos
+  // ==================== CICLO DE VIDA ====================
+  ngOnInit(): void {
+    this.loadInitialData();
     this.cancelCreateEdit();
   }
 
-  cancelCreateEdit() {
+  // ==================== MÉTODOS DE INICIALIZACIÓN ====================
+
+  /**
+   * Carga los datos iniciales: productos, categorías y nombres de fotos
+   */
+  private loadInitialData(): void {
+    this.getAllProducts();
+    this.getAllCategories();
+    this.getNamePhoto();
+  }
+
+  // ==================== MANEJO DEL FORMULARIO ====================
+
+  /**
+   * Resetea el formulario y desactiva los modos de edición/creación
+   */
+  cancelCreateEdit(): void {
     this.handleService.handleCreate(false);
     this.handleService.handleEdit(false);
     this.productForm.reset();
   }
-  getAllCategories() {
-    this.categoryService.getAllCategories().subscribe({
-      next: (data) => {
-        this.categoryService.categoriesLIst = data;
-      },
-      error: (e) => {
-        console.log('ERROR getAllCategories() => ', e);
-      },
-    });
-  }
 
-  // READ
-  getAllProducts() {
+  // ==================== OPERACIONES CRUD - PRODUCTOS ====================
+
+  /**
+   * Obtiene todos los productos y filtra duplicados por nombre
+   */
+  getAllProducts(): void {
     this.productService.getAllProducts().subscribe({
       next: (products) => {
-        // Filtra duplicados por name_product
         this.productService.productsList = products.filter(
           (product, index, self) =>
             index ===
             self.findIndex((p) => p.name_product === product.name_product)
         );
-        // this.productService.getNamePhoto(); // añade de productos el nombre de las imágenes y lo guarda en photosList.
       },
-      error: (e) => {
-        console.log('ERROR getProduct() => ', e.message);
-      },
+      error: (e) => console.error('Error loading products:', e),
     });
   }
 
-  // CREATE
-  handleCreate(isCreate: boolean) {
-    this.handleService.handleCreate(true);
-   
-  }
-  createProduct() {
-    const newProduct = this.productForm.value;
-    const exists = this.productService.productsList.some(
-      (product) =>
-        product.name_product.trim().toLowerCase() ===
-        newProduct.name_product.trim().toLowerCase()
-    );
-
-    if (exists) {
-      alert('El producto ya existe');
+  /**
+   * Crea un nuevo producto con validación de formulario
+   */
+  createProduct(): void {
+    if (!this.productForm.valid) {
+      alert('¡Completa todos los campos!');
       return;
     }
-    this.productService.createProduct(this.productForm.value).subscribe({
-      next: (data) => {
-        console.log('CREATE');
+
+    const productData = {
+      name_product: this.productForm.get('name_product')?.value,
+      description_product: this.productForm.get('description_product')?.value,
+      id_category: Number(this.productForm.get('id_category')?.value),
+      photo_product:
+        this.productForm.get('photo_product')?.value || 'default.jpg',
+    };
+
+    this.productService._createProduct(productData).subscribe({
+      next: () => {
+        alert('¡Producto creado con éxito!');
         this.getAllProducts();
-        this.handleService.handleCreate(false);
-    
+        this.cancelCreateEdit();
       },
       error: (e) => {
-        console.log('ERROR createProduct() => ', e.message);
+        console.error('Error:', e);
+        alert(`Error: ${e.error?.message || 'Error al crear producto'}`);
       },
     });
   }
 
-  // UPDATE
-  handleUpdate(id: number, isEdit: boolean) {
- 
-    this.handleService.handleEdit(true);
+  /**
+   * Actualiza un producto existente
+   */
+  updateProduct(): void {
+    this.productService.updateProduct(this.productForm.value).subscribe({
+      next: () => {
+        this.getAllProducts();
+        this.handleService.handleEdit(false);
+      },
+      error: (e) => console.error('Error updating product:', e),
+    });
+  }
 
-    // seteando los valores del formulario al seleccionar un proveedor
+  /**
+   * Elimina un producto por ID
+   * @param id ID del producto a eliminar
+   */
+  deleteProduct(id: number): void {
+    this.productService.deleteProduct(id).subscribe({
+      next: () => this.getAllProducts(),
+      error: (e) => console.error('Error deleting product:', e),
+    });
+  }
+
+  // ==================== OPERACIONES CRUD - CATEGORÍAS ====================
+
+  /**
+   * Obtiene todas las categorías disponibles
+   */
+  getAllCategories(): void {
+    this.categoryService.getAllCategories().subscribe({
+      next: (data) => (this.categoryService.categoriesLIst = data),
+      error: (e) => console.error('Error loading categories:', e),
+    });
+  }
+
+  // ==================== MANEJO DE FOTOS ====================
+
+  /**
+   * Obtiene los nombres de las fotos disponibles
+   */
+  getNamePhoto(): void {
+    this.productService.getNamePhoto().subscribe({
+      next: (data) => {
+        this.productService.namePhotoList = data;
+      },
+      error: (e) => console.error('Error loading photos:', e),
+    });
+  }
+
+  // ==================== MANEJADORES DE UI ====================
+
+  /**
+   * Activa/desactiva el modo creación
+   * @param isCreate Estado deseado para el modo creación
+   */
+  handleCreate(isCreate: boolean): void {
+    this.handleService.handleCreate(isCreate);
+  }
+
+  /**
+   * Prepara el formulario para editar un producto
+   * @param id ID del producto a editar
+   * @param isEdit Estado deseado para el modo edición
+   */
+  handleUpdate(id: number, isEdit: boolean): void {
+    this.handleService.handleEdit(isEdit);
     const product = this.productService.productsList.find(
       (p) => p.id_product === id
     );
-    if (product) {
-      this.productForm.patchValue(product);
-    }
-  }
-  updateProduct() {
-    // console.log(this.productForm.value);
-
-    this.productService.updateProduct(this.productForm.value).subscribe({
-      next: (data) => {
-        console.log('UPDATE');
-        this.getAllProducts();
-        
-    this.handleService.handleEdit(false);
-      },
-      error: (e) => {
-        console.log('ERROR updateProduct() => ', e.message);
-      },
-    });
+    if (product) this.productForm.patchValue(product);
   }
 
-  // DELETE
-  handleDelete(id: number) {
-    const confirmed = confirm('¿Seguro que quieres borrar?');
-    if (confirmed) {
+  /**
+   * Confirma y ejecuta la eliminación de un producto
+   * @param id ID del producto a eliminar
+   */
+  handleDelete(id: number): void {
+    if (confirm('¿Seguro que quieres borrar?')) {
       this.deleteProduct(id);
     }
-  }
-  deleteProduct(id: number) {
-    this.productService.deleteProduct(id).subscribe({
-      next: (data) => {
-        console.log('DELETE');
-        this.getAllProducts();
-      },
-      error: (e) => {
-        console.log('ERROR deleteProduct() => ', e.message);
-      },
-    });
   }
 }

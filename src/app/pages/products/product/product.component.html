@@ -1,139 +1,206 @@
-@if(handleService.isCreate){
-<!-- CREATE -->
-<form [formGroup]="productForm">
-  <fieldset>
-    <label for="product-name">*Name </label>
-    <input
-      type="text"
-      id="product-name"
-      formControlName="name_product"
-      required
-    />
-  </fieldset>
-  <fieldset>
-    <label for="product-description">*Description</label>
-    <input
-      type="text"
-      id="product-description"
-      formControlName="description_product"
-      required
-    />
-  </fieldset>
-  <!-- <fieldset>
-        <label for="product-unit">*Unit </label>
-        <input type="text" id="product-unit" formControlName="unit_product" required>
-    </fieldset> -->
-  <!-- <fieldset>
-    <label for="product-price">*Price € </label>
-    <input
-      type="text"
-      id="product-price"
-      formControlName="price_product"
-      required
-    />
-  </fieldset> -->
-  <fieldset>
-    <label for="provider-category">*Category </label>
-    <select id="provider-category" formControlName="id_category" required>
-      <option value="" disabled selected>...</option>
-      @for (category of categoryService.categoriesLIst; track $index) {
-      <option [value]="category.id_category">
-        {{ category.name_category }}
-      </option>
-      }
-    </select>
-  </fieldset>
-  <fieldset>
-    <label for="product-photo">*Photo </label>
-    <input
-      id="product-photo"
-      list="photos"
-      formControlName="photo_product"
-      required
-      placeholder="Escribe o selecciona una foto..."
-    />
-    <datalist id="photos">
-      @for (photo of productService.productsList; track $index) {a
-      <option [value]="photo">{{ photo.photo_product }}</option>
-      }
-    </datalist>
-  </fieldset>
-</form>
+@if(handleService.isCreate) {
+<!-- ==================== MODO CREACIÓN ==================== -->
+<div class="container text-center">
+  <div class="row align-items-center">
+    <div class="col"></div>
+    <div class="col-sm-6 col-md-8">
+      <form [formGroup]="productForm">
+        <!-- Nombre del Producto -->
+        <fieldset>
+          <div class="mb-3">
+            <label for="product-name" class="form-label">Nombre</label>
+            <input
+              type="text"
+              class="form-control"
+              id="product-name"
+              formControlName="name_product"
+              required
+            />
+          </div>
+        </fieldset>
 
-<button (click)="createProduct()" [disabled]="productForm.invalid">
-  Crear Proveedor
-</button>
-<button (click)="cancelCreateEdit()">Cancelar</button>
+        <!-- Descripción del Producto -->
+        <fieldset>
+          <div class="mb-3">
+            <label for="product-description" class="form-label"
+              >Descripción</label
+            >
+            <textarea
+              class="form-control"
+              id="product-description"
+              formControlName="description_product"
+              rows="3"
+              required
+            ></textarea>
+          </div>
+        </fieldset>
 
-}@else if (handleService.isEdit) {
-<!-- UPDATE -->
-<form [formGroup]="productForm">
-  <fieldset>
-    <label for="product-name">*Name </label>
-    <input
-      type="text"
-      id="product-name"
-      formControlName="name_product"
-      required
-    />
-  </fieldset>
-  <fieldset>
-    <label for="product-description">*Description</label>
-    <input
-      type="text"
-      id="product-description"
-      formControlName="description_product"
-      required
-    />
-  </fieldset>
-  <!-- <fieldset>
-        <label for="product-unit">*Unit </label>
-        <input type="text" id="product-unit" formControlName="unit_product" required>
-    </fieldset> -->
-  <!-- <fieldset>
-    <label for="product-price">*Price € </label>
-    <input
-      type="text"
-      id="product-price"
-      formControlName="price_product"
-      required
-    />
-  </fieldset> -->
-  <fieldset>
-    <label for="provider-category">*Category </label>
-    <select id="provider-category" formControlName="id_category" required>
-      <option value="" disabled selected>...</option>
-      @for (category of categoryService.categoriesLIst; track $index) {
-      <option [value]="category.id_category">
-        {{ category.name_category }}
-      </option>
-      }
-    </select>
-  </fieldset>
-  <fieldset>
-    <label for="product-photo">*Photo </label>
-    <input
-      id="product-photo"
-      list="photos"
-      formControlName="photo_product"
-      required
-      placeholder="Escribe o selecciona una foto..."
-    />
-    <datalist id="photos">
-      @for (photo of productService.productsList; track $index) {a
-      <option [value]="photo">{{ photo.photo_product }}</option>
-      }
-    </datalist>
-  </fieldset>
-</form>
+        <!-- Selección de Categoría -->
+        <fieldset>
+          <div class="mb-3">
+            <label for="provider-category" class="form-label">Categorías</label>
+            <select
+              class="form-select"
+              formControlName="id_category"
+              id="provider-category"
+            >
+              <option value="" disabled selected>...</option>
+              @for (category of categoryService.categoriesLIst; track $index) {
+              <option [value]="category.id_category">
+                {{ category.name_category }}
+              </option>
+              }
+            </select>
+          </div>
+        </fieldset>
 
-<button (click)="updateProduct()" [disabled]="productForm.invalid">
-  Actualizar Proveedor
-</button>
-<button (click)="cancelCreateEdit()">Cancelar</button>
+        <!-- Selección de Foto -->
+        <fieldset>
+          <div class="mb-3">
+            <label for="photo_product" class="form-label">Fotografía</label>
+            <select
+              class="form-select"
+              formControlName="photo_product"
+              id="photo_product"
+            >
+              <option value="" disabled selected>...</option>
+              @for (photo of productService.namePhotoList; track $index) {
+              <option [value]="photo">{{ photo }}</option>
+              }
+            </select>
+          </div>
+        </fieldset>
+      </form>
+    </div>
+    <div class="col"></div>
+  </div>
 
-}@else {
-<!-- READ -->
+  <!-- Botones de Acción -->
+  <div class="row align-items-center">
+    <div class="col">
+      <button
+        type="button"
+        class="btn btn-outline-danger"
+        (click)="cancelCreateEdit()"
+      >
+        Cancelar
+      </button>
+    </div>
+    <div class="col"></div>
+    <div class="col">
+      <button
+        type="button"
+        class="btn btn-outline-success"
+        (click)="createProduct()"
+        [disabled]="productForm.invalid"
+      >
+        Crear Proveedor
+      </button>
+    </div>
+  </div>
+</div>
+
+} @else if (handleService.isEdit) {
+<!-- ==================== MODO EDICIÓN ==================== -->
+<div class="container text-center">
+  <div class="row align-items-center">
+    <div class="col"></div>
+    <div class="col-sm-6 col-md-8">
+      <form [formGroup]="productForm">
+        <!-- Mismos campos que en creación pero para edición -->
+        <fieldset>
+          <div class="mb-3">
+            <label for="product-name" class="form-label">Nombre</label>
+            <input
+              type="text"
+              class="form-control"
+              id="product-name"
+              formControlName="name_product"
+              required
+            />
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <div class="mb-3">
+            <label for="product-description" class="form-label"
+              >Descripción</label
+            >
+            <textarea
+              class="form-control"
+              id="product-description"
+              formControlName="description_product"
+              rows="3"
+              required
+            ></textarea>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <div class="mb-3">
+            <label for="provider-category" class="form-label">Categorías</label>
+            <select
+              class="form-select"
+              formControlName="id_category"
+              id="provider-category"
+            >
+              <option value="" disabled selected>...</option>
+              @for (category of categoryService.categoriesLIst; track $index) {
+              <option [value]="category.id_category">
+                {{ category.name_category }}
+              </option>
+              }
+            </select>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <div class="mb-3">
+            <label for="product-photo" class="form-label">Fotografía</label>
+            <select
+              class="form-select"
+              formControlName="photo_product"
+              id="product-photo"
+            >
+              <option value="" disabled selected>...</option>
+              @for (photo of productService.namePhotoList; track $index) {
+              <option [value]="photo">{{ photo }}</option>
+              }
+            </select>
+          </div>
+        </fieldset>
+      </form>
+    </div>
+    <div class="col"></div>
+  </div>
+
+  <!-- Botones de Acción -->
+  <div class="row align-items-center">
+    <div class="col">
+      <button
+        type="button"
+        class="btn btn-outline-danger"
+        (click)="cancelCreateEdit()"
+      >
+        Cancelar
+      </button>
+    </div>
+    <div class="col"></div>
+    <div class="col">
+      <button
+        type="button"
+        class="btn btn-outline-success"
+        (click)="updateProduct()"
+        [disabled]="productForm.invalid"
+      >
+        Actualizar Proveedor
+      </button>
+    </div>
+  </div>
+</div>
+
+} @else {
+<!-- ==================== MODO VISUALIZACIÓN ==================== -->
 <div class="container text-center">
   <button
     type="button"
@@ -143,33 +210,37 @@
     Crear nuevos productos
   </button>
 </div>
-@for (product of productService.productsList; track $index) {
 
-<div class="container text-center">
-  <div class="row align-items-center">
-    <div class="col">
+<!-- Lista de Productos -->
+@for (product of productService.productsList; track $index) {
+<div class="container-fluid text-center px-5">
+  <div class="row align-items-center justify-content-center">
+    <!-- Botón Editar -->
+    <div class="col-1">
       <p
         class="trash-icon rounded float-end"
-        (click)="handleUpdate(product.id_product, true)"
+        (click)="handleUpdate(product.id_product!, true)"
       >
         🖊️
       </p>
     </div>
-    <div class="col">
-      <div class="card mb-3" style="max-width: 540px">
+
+    <!-- Tarjeta de Producto - Ahora con mismo ancho que proveedores -->
+    <div class="col-9">
+      <div class="card mb-3">
         <div class="row g-0">
           <div
             class="col-md-4 d-flex align-items-center justify-content-center"
           >
             <img
-              class="rounded mx-auto d-bloc"
-              [src]="'assets/img/products/' + product.photo_product + '.jpg'"
-              alt="{{ product.photo_product }}"
+              class="rounded mx-auto d-bloc m-2"
+              [src]="'/assets/img/products/' + product.photo_product"
+              [alt]="product.photo_product"
               style="width: 100%; height: 150px; object-fit: contain"
             />
           </div>
           <div class="col-md-8">
-            <div class="card-body">
+            <div class="card-body p-4">
               <h5 class="card-title">{{ product.name_product }}</h5>
               <p class="card-text">{{ product.description_product }}</p>
               <p class="card-text">
@@ -182,43 +253,16 @@
         </div>
       </div>
     </div>
-    <div class="col">
+
+    <!-- Botón Eliminar -->
+    <div class="col-1">
       <p
         class="trash-icon rounded float-start"
-        (click)="handleDelete(product.id_product)"
+        (click)="handleDelete(product.id_product!)"
       >
         🗑️
       </p>
     </div>
   </div>
 </div>
-
 } }
-
-<div class="container text-center">
-  <div class="row align-items-center">
-    <div class="col">One of three columns</div>
-    <div class="col">One of three columns</div>
-    <div class="col">One of three columns</div>
-  </div>
-</div>
-
-<div class="card mb-3" style="max-width: 540px">
-  <div class="row g-0">
-    <div class="col-md-4">
-      <img src="..." class="img-fluid rounded-start" alt="..." />
-    </div>
-    <div class="col-md-8">
-      <div class="card-body">
-        <h5 class="card-title">Card title</h5>
-        <p class="card-text">
-          This is a wider card with supporting text below as a natural lead-in
-          to additional content. This content is a little bit longer.
-        </p>
-        <p class="card-text">
-          <small class="text-body-secondary">Last updated 3 mins ago</small>
-        </p>
-      </div>
-    </div>
-  </div>
-</div>

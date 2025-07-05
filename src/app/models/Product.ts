@@ -1,5 +1,5 @@
 export default interface Product {
-  id_product: number;
+  id_product?: number;
   name_product: string;
   description_product: string;
   photo_product: string;

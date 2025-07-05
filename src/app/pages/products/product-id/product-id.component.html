@@ -1,0 +1,280 @@
+@if (productService.isCreate) {
+<!-- ==================== MODO COMPRA ==================== -->
+<div class="container-fluid text-center px-5">
+  <div class="row mb-4">
+    <div class="col text-start">
+      <button class="btn btn-outline-danger" (click)="cancelCreateEdit()">
+        VOLVER
+      </button>
+    </div>
+  </div>
+
+  <!-- Información del Proveedor -->
+  <div class="row mb-4">
+    @for (provider of providerService.providersList; track $index) {
+      @if(id_provider_product == provider.id_provider) {
+      <div class="col-12">
+        <h2 class="card-title">Proveedor: {{ provider.name_provider }}</h2>
+        <h3 class="card-subtitle mb-2 text-muted">Saldo: {{ provider_count }} €</h3>
+      </div>
+      }
+    }
+  </div>
+
+  <!-- Lista de Productos para Comprar -->
+  @for (product of productService.productsList; track $index) {
+    @if (productForms[product.id_product]) {
+    <div class="row align-items-center mb-4">
+      <div class="col-1">
+        <!-- Espacio para alineación -->
+      </div>
+      
+      <div class="col-9">
+        <div class="card mb-3">
+          <div class="row g-0">
+            <!-- Imagen del Producto -->
+            <div class="col-md-4 d-flex align-items-center justify-content-center p-3">
+              <img class="img-fluid rounded" 
+                   [src]="'assets/img/products/' + product.photo_product + '.jpg'" 
+                   [alt]="product.photo_product"
+                   style="max-height: 150px; object-fit: contain">
+            </div>
+            
+            <!-- Detalles del Producto -->
+            <div class="col-md-8">
+              <div class="card-body text-start">
+                <h5 class="card-title">{{ product.name_product }}</h5>
+                <p class="card-text">{{ product.description_product }}</p>
+                <p class="card-text">
+                  <small class="text-body-secondary">{{ product.name_category }}</small>
+                </p>
+                
+                <!-- Formulario de Compra -->
+                <form [formGroup]="productForms[product.id_product]" class="mt-3">
+                  <div class="row">
+                    <div class="col-md-6 mb-3">
+                      <label for="pros-unit-{{ product.id_product }}" class="form-label">*Unidades</label>
+                      <input type="number" class="form-control" 
+                             id="pros-unit-{{ product.id_product }}" 
+                             formControlName="unit_pros" 
+                             min="1">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <label for="pros-price-{{ product.id_product }}" class="form-label">*Precio (€)</label>
+                      <input type="number" class="form-control" 
+                             id="pros-price-{{ product.id_product }}" 
+                             formControlName="price_pros" 
+                             min="0.01" step="0.01">
+                    </div>
+                  </div>
+                  
+                  @if(getTotal(product.id_product) > provider_count) {
+                  <div class="alert alert-danger mb-3">
+                    Saldo insuficiente para esta compra
+                  </div>
+                  }
+                  
+                  <h4 class="mb-3">Total: {{ getTotal(product.id_product) | number:'1.2-2' }} €</h4>
+                  
+                  <button class="btn btn-outline-success" 
+                          (click)="handleCreatePros(product.id_product)"
+                          [disabled]="productForms[product.id_product].invalid || getTotal(product.id_product) > provider_count">
+                    Comprar
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-1">
+        <!-- Espacio para alineación -->
+      </div>
+    </div>
+    }
+  }
+</div>
+
+} @else if (productService.isEdit) {
+<!-- ==================== MODO VENTA ==================== -->
+<div class="container-fluid text-center px-5">
+  <div class="row mb-4">
+    <div class="col text-start">
+      <button class="btn btn-outline-danger" (click)="cancelCreateEdit()">
+        VOLVER
+      </button>
+    </div>
+  </div>
+
+  <!-- Información del Proveedor -->
+  <div class="row mb-4">
+    @for (provider of providerService.providersList; track $index) {
+      @if(id_provider_product == provider.id_provider) {
+      <div class="col-12">
+        <h2 class="card-title">Proveedor: {{ provider.name_provider }}</h2>
+        <h3 class="card-subtitle mb-2 text-muted">Saldo: {{ provider_count }} €</h3>
+      </div>
+      }
+    }
+  </div>
+
+  <!-- Formulario de Venta -->
+  @for (pros of prosService.prosList; track $index) {
+    @if (pros.id_product === id_product_provider && productForms[pros.id_product]) {
+    <div class="row align-items-center mb-4">
+      <div class="col-1">
+        <!-- Espacio para alineación -->
+      </div>
+      
+      <div class="col-9">
+        <div class="card mb-3">
+          <div class="row g-0">
+            <!-- Imagen del Producto -->
+            <div class="col-md-4 d-flex align-items-center justify-content-center p-3">
+              <img class="img-fluid rounded" 
+                   [src]="'assets/img/products/' + pros.photo_product + '.jpg'" 
+                   [alt]="pros.photo_product"
+                   style="max-height: 150px; object-fit: contain">
+            </div>
+            
+            <!-- Detalles del Producto -->
+            <div class="col-md-8">
+              <div class="card-body text-start">
+                <h5 class="card-title">{{ pros.name_product }}</h5>
+                <p class="card-text">{{ pros.description_product }}</p>
+                <p class="card-text">
+                  <small class="text-body-secondary">Disponibles: {{ pros.unit_pros }} unidades</small>
+                </p>
+                
+                <!-- Formulario de Venta -->
+                <form [formGroup]="productForms[pros.id_product]" class="mt-3">
+                  <div class="row">
+                    <div class="col-md-6 mb-3">
+                      <label for="pros-unit-{{ pros.id_product }}" class="form-label">*Unidades a vender</label>
+                      <input type="number" class="form-control" 
+                             id="pros-unit-{{ pros.id_product }}" 
+                             formControlName="unit_pros" 
+                             min="1" [max]="pros.unit_pros">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <label for="pros-price-{{ pros.id_product }}" class="form-label">*Precio (€)</label>
+                      <input type="number" class="form-control" 
+                             id="pros-price-{{ pros.id_product }}" 
+                             formControlName="price_pros" 
+                             min="0.01" step="0.01">
+                    </div>
+                  </div>
+                  
+                  <div class="alert alert-info mb-3">
+                    Precio recomendado: {{ pros.price_pros * 1.05 | number:'1.2-2' }} € por unidad
+                  </div>
+                  
+                  <h4 class="mb-3">Total: {{ getTotal(pros.id_product) | number:'1.2-2' }} €</h4>
+                  
+                  <button class="btn btn-outline-primary" 
+                          (click)="handleUpdatePros(pros.id_product)"
+                          [disabled]="productForms[pros.id_product].invalid">
+                    Vender
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-1">
+        <!-- Espacio para alineación -->
+      </div>
+    </div>
+    }
+  }
+</div>
+
+} @else {
+<!-- ==================== MODO LECTURA ==================== -->
+<div class="container-fluid text-center px-5">
+  <div class="row mb-4">
+    <div class="col text-start">
+      <button class="btn btn-outline-danger" [routerLink]="['/provider/']">
+        VOLVER
+      </button>
+    </div>
+    <div class="col text-end">
+      <button class="btn btn-outline-success" (click)="handleCreate(true)">
+        COMPRAR
+      </button>
+    </div>
+  </div>
+
+  <!-- Información del Proveedor -->
+  <div class="row mb-4">
+    @for (provider of providerService.providersList; track $index) {
+      @if(id_provider_product == provider.id_provider) {
+      <div class="col-12">
+        <h2 class="card-title">Proveedor: {{ provider.name_provider }}</h2>
+        <h3 class="card-subtitle mb-2 text-muted">Saldo: {{ provider_count }} €</h3>
+      </div>
+      }
+    }
+  </div>
+
+  <!-- Lista de Productos -->
+  @for (pros of prosService.prosList; track $index) {
+  <div class="row align-items-center mb-4">
+    <div class="col-1">
+      <!-- Botón Vender -->
+      <p class="trash-icon rounded float-end" (click)="sales(pros.id_product)">
+        🖊️
+      </p>
+    </div>
+    
+    <div class="col-9">
+      <div class="card mb-3">
+        <div class="row g-0">
+          <!-- Imagen del Producto -->
+          <div class="col-md-4 d-flex align-items-center justify-content-center p-3">
+            <img class="img-fluid rounded" 
+                 [src]="'assets/img/products/' + pros.photo_product + '.jpg'" 
+                 [alt]="pros.photo_product"
+                 style="max-height: 150px; object-fit: contain">
+          </div>
+          
+          <!-- Detalles del Producto -->
+          <div class="col-md-8">
+            <div class="card-body text-start">
+              <h5 class="card-title">{{ pros.name_product }}</h5>
+              <p class="card-text">{{ pros.description_product }}</p>
+              <div class="row mt-3">
+                <div class="col-md-6">
+                  <p class="card-text"><strong>Unidades:</strong> {{ pros.unit_pros }}</p>
+                </div>
+                <div class="col-md-6">
+                  <p class="card-text"><strong>Precio:</strong> {{ pros.price_pros | number:'1.2-2' }} €</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-1">
+      <!-- Botón Eliminar -->
+      <p class="trash-icon rounded float-start" (click)="handleDelete(pros.id_pros)">
+        🗑️
+      </p>
+    </div>
+  </div>
+  } @empty {
+  <div class="row">
+    <div class="col-12">
+      <div class="alert alert-warning">
+        <h2>No hay productos en inventario</h2>
+      </div>
+    </div>
+  </div>
+  }
+</div>
+}
