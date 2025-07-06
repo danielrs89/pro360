@@ -10,12 +10,12 @@ export class ProductService {
   readonly API_URL = 'http://localhost:3000/product';
   productsList: Product[];
   namePhotoList: string[];
-  // productsIDList: Product[];
+  
 
   constructor(private http: HttpClient) {
     this.productsList = [];
     this.namePhotoList = [];
-    // this.productsIDList = [];
+    
   }
 
   getAllProducts() {
